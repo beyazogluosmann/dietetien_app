@@ -1,6 +1,7 @@
 import { Suspense } from "react";
 import { redirect } from "next/navigation";
 import { signIn } from "@/auth/sign-in";
+import { setSession } from "@/auth/session";
 
 async function login(formData: FormData) {
   "use server";
@@ -14,9 +15,11 @@ async function login(formData: FormData) {
   }
 
   if (result.role === "dietitian") {
+    await setSession({ role: "dietitian", id: result.dietitianId });
     redirect("/dietitian");
   }
 
+  await setSession({ role: "client", id: result.clientId });
   redirect("/client");
 }
 
