@@ -2,6 +2,7 @@ import { Suspense } from "react";
 import { redirect } from "next/navigation";
 import { signIn } from "@/auth/sign-in";
 import { setSession } from "@/auth/session";
+import { fieldClass, primaryButtonClass, Screen } from "@/components/ui";
 
 async function login(formData: FormData) {
   "use server";
@@ -33,7 +34,11 @@ async function LoginError({
     return null;
   }
 
-  return <p>E-posta veya şifre yanlış.</p>;
+  return (
+    <p className="rounded-lg bg-[#fde8e4] px-3 py-2 text-sm text-[#8a2e22]">
+      E-posta veya şifre yanlış.
+    </p>
+  );
 }
 
 export default function Home({
@@ -42,34 +47,39 @@ export default function Home({
   searchParams: Promise<{ error?: string }>;
 }) {
   return (
-    <main className="mx-auto flex min-h-full w-full max-w-sm flex-col justify-center gap-6 px-6 py-16">
-      <h1 className="text-2xl font-semibold">Giriş</h1>
-      <form action={login} className="flex flex-col gap-4">
-        <label className="flex flex-col gap-1 text-sm">
-          E-posta
-          <input
-            name="email"
-            type="email"
-            autoComplete="username"
-            className="rounded border px-3 py-2"
-          />
-        </label>
-        <label className="flex flex-col gap-1 text-sm">
-          Şifre
-          <input
-            name="password"
-            type="password"
-            autoComplete="current-password"
-            className="rounded border px-3 py-2"
-          />
-        </label>
-        <button type="submit" className="rounded bg-black px-3 py-2 text-white">
-          Giriş yap
-        </button>
-      </form>
-      <Suspense>
-        <LoginError searchParams={searchParams} />
-      </Suspense>
-    </main>
+    <Screen width="max-w-md">
+      <div className="rounded-lg border border-[#e6e6e2] bg-white px-8 py-8 shadow-[0_1px_2px_rgba(28,28,26,0.04)]">
+        <h1 className="text-3xl font-semibold tracking-tight">Giriş</h1>
+        <p className="mt-2 text-sm text-[#6b6b66]">Diyetisyen veya danışan hesabınla gir.</p>
+        <form action={login} className="mt-8 flex flex-col gap-4">
+          <label className="flex flex-col gap-1 text-sm">
+            E-posta
+            <input
+              name="email"
+              type="email"
+              autoComplete="username"
+              className={fieldClass}
+            />
+          </label>
+          <label className="flex flex-col gap-1 text-sm">
+            Şifre
+            <input
+              name="password"
+              type="password"
+              autoComplete="current-password"
+              className={fieldClass}
+            />
+          </label>
+          <button type="submit" className={`${primaryButtonClass} mt-2 justify-center`}>
+            Giriş yap
+          </button>
+        </form>
+        <div className="mt-4">
+          <Suspense>
+            <LoginError searchParams={searchParams} />
+          </Suspense>
+        </div>
+      </div>
+    </Screen>
   );
 }

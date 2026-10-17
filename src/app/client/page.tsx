@@ -1,10 +1,10 @@
 import { Suspense } from "react";
 import { redirect } from "next/navigation";
 import { eq } from "drizzle-orm";
-import { signOut } from "@/auth/sign-out";
 import { getSession } from "@/auth/session";
+import { Screen, SignOutButton } from "@/components/ui";
 import { db } from "@/db";
-import { client } from "@/db/schema";
+import { client, dietList, dietitian } from "@/db/schema";
 
 async function ClientRoom() {
   const session = await getSession();
@@ -21,16 +21,43 @@ async function ClientRoom() {
     redirect("/");
   }
 
+  const [list] = await db
+    .select({
+      body: dietList.body,
+      status: dietList.status,
+      authorName: dietitian.name,
+    })
+    .from(dietList)
+    .leftJoin(dietitian, eq(dietList.authorId, dietitian.id))
+    .where(eq(dietList.clientId, person.id));
+
+  const visibleList = list?.status === "sent" ? list : null;
+
   return (
-    <main className="mx-auto flex min-h-full w-full max-w-sm flex-col justify-center gap-4 px-6 py-16">
-      <h1 className="text-2xl font-semibold">Danışan odası</h1>
-      <p>{person.name}</p>
-      <form action={signOut}>
-        <button type="submit" className="rounded border px-3 py-2">
-          Çıkış yap
-        </button>
-      </form>
-    </main>
+    <Screen
+      width="max-w-2xl"
+      actions={
+        <div className="flex items-center gap-4">
+          <p className="hidden text-sm text-[#6b6b66] sm:block">{person.name}</p>
+          <SignOutButton />
+        </div>
+      }
+    >
+      <div className="mb-8">
+        <p className="text-sm text-[#6b6b66]">Diyet listesi</p>
+        <h1 className="mt-1 text-3xl font-semibold tracking-tight">{person.name}</h1>
+      </div>
+      {visibleList ? (
+        <article className="rounded-lg border border-[#e6e6e2] bg-white px-8 py-8 shadow-[0_1px_2px_rgba(28,28,26,0.04)]">
+          <p className="mb-6 text-sm text-[#6b6b66]">{visibleList.authorName} hazırladı</p>
+          <p className="whitespace-pre-wrap text-[15px] leading-8">{visibleList.body}</p>
+        </article>
+      ) : (
+        <p className="rounded-lg border border-[#e6e6e2] bg-white px-8 py-8 text-sm text-[#6b6b66]">
+          Yayınlanmış bir listen yok. Diyetisyenin yayınlayınca burada görünür.
+        </p>
+      )}
+    </Screen>
   );
 }
 

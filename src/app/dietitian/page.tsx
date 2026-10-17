@@ -1,8 +1,9 @@
 import { Suspense } from "react";
+import Link from "next/link";
 import { redirect } from "next/navigation";
 import { eq } from "drizzle-orm";
-import { signOut } from "@/auth/sign-out";
 import { getSession } from "@/auth/session";
+import { linkClass, ListStatus, Screen, SignOutButton } from "@/components/ui";
 import { db } from "@/db";
 import { client, clientAccount, dietList, dietitian } from "@/db/schema";
 
@@ -37,45 +38,49 @@ async function DietitianRoom() {
     .orderBy(client.name);
 
   return (
-    <main className="mx-auto flex min-h-full w-full max-w-3xl flex-col gap-6 px-6 py-16">
-      <div className="flex items-center justify-between gap-4">
-        <div>
-          <h1 className="text-2xl font-semibold">Danışanlar</h1>
-          <p>{person.name}</p>
+    <Screen
+      actions={
+        <div className="flex items-center gap-4">
+          <p className="hidden text-sm text-[#6b6b66] sm:block">{person.name}</p>
+          <SignOutButton />
         </div>
-        <form action={signOut}>
-          <button type="submit" className="rounded border px-3 py-2">
-            Çıkış yap
-          </button>
-        </form>
+      }
+    >
+      <div className="mb-6">
+        <h1 className="text-3xl font-semibold tracking-tight">Danışanlar</h1>
+        <p className="mt-1 text-sm text-[#6b6b66]">{rows.length} kayıt</p>
       </div>
-      <table className="w-full text-left">
-        <thead>
-          <tr className="border-b">
-            <th className="py-2 font-medium">Danışan</th>
-            <th className="py-2 font-medium">Sorumlu</th>
-            <th className="py-2 font-medium">Liste</th>
-            <th className="py-2 font-medium">Giriş</th>
-          </tr>
-        </thead>
-        <tbody>
-          {rows.map((row) => (
-            <tr key={row.id} className="border-b">
-              <td className="py-2">{row.name}</td>
-              <td className="py-2">{row.dietitianName}</td>
-              <td className="py-2">
-                {row.status === "sent"
-                  ? "Gönderildi"
-                  : row.status === "draft"
-                    ? "Taslak"
-                    : "Liste yok"}
-              </td>
-              <td className="py-2">{row.accountId ? "Hesabı var" : row.inviteCode}</td>
+      <div className="overflow-hidden rounded-lg border border-[#e6e6e2] bg-white">
+        <table className="w-full text-left text-sm">
+          <thead className="border-b border-[#eee] bg-[#fafaf8] text-xs text-[#6b6b66]">
+            <tr>
+              <th className="px-4 py-3 font-medium">Danışan</th>
+              <th className="px-4 py-3 font-medium">Sorumlu</th>
+              <th className="px-4 py-3 font-medium">Liste</th>
+              <th className="px-4 py-3 font-medium">Giriş</th>
             </tr>
-          ))}
-        </tbody>
-      </table>
-    </main>
+          </thead>
+          <tbody>
+            {rows.map((row) => (
+              <tr key={row.id} className="border-b border-[#f0f0ec] last:border-0 hover:bg-[#fafaf8]">
+                <td className="px-4 py-3.5">
+                  <Link href={`/dietitian/clients/${row.id}`} className={linkClass}>
+                    {row.name}
+                  </Link>
+                </td>
+                <td className="px-4 py-3.5 text-[#6b6b66]">{row.dietitianName}</td>
+                <td className="px-4 py-3.5">
+                  <ListStatus status={row.status} />
+                </td>
+                <td className="px-4 py-3.5 text-[#6b6b66]">
+                  {row.accountId ? "Hesabı var" : row.inviteCode}
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </Screen>
   );
 }
 
