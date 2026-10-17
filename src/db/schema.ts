@@ -15,7 +15,6 @@ export const client = pgTable("client", {
   dietitianId: uuid("dietitian_id")
     .notNull()
     .references(() => dietitian.id),
-  inviteCode: text("invite_code").unique(),
 });
 
 export const clientAccount = pgTable("client_account", {

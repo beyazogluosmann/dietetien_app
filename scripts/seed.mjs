@@ -37,8 +37,8 @@ const [elifClient] = await sql`
 `;
 
 const [kerem] = await sql`
-  insert into client (name, phone, note, dietitian_id, invite_code)
-  values ('Kerem Aydın', '532 000 00 22', 'Akşamları dışarıda yiyor', ${emre.id}, 'KEREM-4F')
+  insert into client (name, phone, note, dietitian_id)
+  values ('Kerem Aydın', '532 000 00 22', 'Akşamları dışarıda yiyor', ${emre.id})
   returning id
 `;
 

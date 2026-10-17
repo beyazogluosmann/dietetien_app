@@ -28,7 +28,6 @@ async function DietitianRoom() {
       name: client.name,
       dietitianName: dietitian.name,
       status: dietList.status,
-      inviteCode: client.inviteCode,
       accountId: clientAccount.id,
     })
     .from(client)
@@ -73,7 +72,7 @@ async function DietitianRoom() {
                   <ListStatus status={row.status} />
                 </td>
                 <td className="px-4 py-3.5 text-[#6b6b66]">
-                  {row.accountId ? "Hesabı var" : row.inviteCode}
+                  {row.accountId ? "Hesabı var" : "Hesabı yok"}
                 </td>
               </tr>
             ))}
