@@ -66,7 +66,9 @@ async function ClientRoom() {
         <p className="rounded-lg border border-[#e6e6e2] bg-white px-8 py-8 text-sm text-[#6b6b66]">
           {request?.status === "pending"
             ? `${chosen?.name ?? "Diyetisyenin"} talebini aldı. Listeyi yazınca burada görünür.`
-            : "Yayınlanmış bir listen yok. Diyetisyenin yayınlayınca burada görünür."}
+            : request?.status === "rejected"
+              ? `${chosen?.name ?? "Diyetisyenin"} talebi kabul etmedi.`
+              : "Yayınlanmış bir listen yok. Diyetisyenin yayınlayınca burada görünür."}
         </p>
       )}
     </Screen>

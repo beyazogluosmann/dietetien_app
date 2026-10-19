@@ -73,6 +73,29 @@ async function saveList(formData: FormData) {
   redirect(`/dietitian/clients/${clientId}`);
 }
 
+async function rejectRequest(formData: FormData) {
+  "use server";
+
+  const session = await getSession();
+  if (!session || session.role !== "dietitian") {
+    redirect("/");
+  }
+
+  const clientId = String(formData.get("clientId") ?? "");
+  await db
+    .update(clientRequest)
+    .set({ status: "rejected" })
+    .where(
+      and(
+        eq(clientRequest.clientId, clientId),
+        eq(clientRequest.dietitianId, session.id),
+        eq(clientRequest.status, "pending"),
+      ),
+    );
+
+  redirect(`/dietitian/clients/${clientId}`);
+}
+
 async function DietListPage({ params }: { params: Promise<{ id: string }> }) {
   const session = await getSession();
   if (!session || session.role !== "dietitian") {
@@ -118,9 +141,17 @@ async function DietListPage({ params }: { params: Promise<{ id: string }> }) {
           : "Liste yok. Yazınca senin adın yazar."}
       </p>
       {request ? (
-        <p className="mb-6 rounded-lg border border-[#eadfc4] bg-[#fbf8f1] px-4 py-3 text-sm">
-          Talep: {request.message || "Liste istiyor."}
-        </p>
+        <div className="mb-6 flex flex-wrap items-center justify-between gap-3 rounded-lg border border-[#eadfc4] bg-[#fbf8f1] px-4 py-3">
+          <p className="text-sm">Talep: {request.message || "Liste istiyor."}</p>
+          {request.dietitianId === session.id ? (
+            <form action={rejectRequest}>
+              <input type="hidden" name="clientId" value={card.id} />
+              <button type="submit" className={buttonClass}>
+                Reddet
+              </button>
+            </form>
+          ) : null}
+        </div>
       ) : null}
       {canEdit ? (
         <form
