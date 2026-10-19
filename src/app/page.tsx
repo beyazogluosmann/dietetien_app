@@ -1,8 +1,9 @@
 import { Suspense } from "react";
+import Link from "next/link";
 import { redirect } from "next/navigation";
 import { signIn } from "@/auth/sign-in";
 import { setSession } from "@/auth/session";
-import { fieldClass, primaryButtonClass, Screen } from "@/components/ui";
+import { fieldClass, linkClass, primaryButtonClass, Screen } from "@/components/ui";
 
 async function login(formData: FormData) {
   "use server";
@@ -79,6 +80,11 @@ export default function Home({
             <LoginError searchParams={searchParams} />
           </Suspense>
         </div>
+        <p className="mt-6 text-sm">
+          <Link href="/register" className={linkClass}>
+            Kayıt ol
+          </Link>
+        </p>
       </div>
     </Screen>
   );

@@ -1,6 +1,6 @@
 import { Suspense } from "react";
 import { redirect } from "next/navigation";
-import { eq } from "drizzle-orm";
+import { and, eq } from "drizzle-orm";
 import { getSession } from "@/auth/session";
 import {
   BackLink,
@@ -11,7 +11,7 @@ import {
   SignOutButton,
 } from "@/components/ui";
 import { db } from "@/db";
-import { client, dietList, dietitian } from "@/db/schema";
+import { client, clientRequest, dietList, dietitian } from "@/db/schema";
 
 async function saveList(formData: FormData) {
   "use server";
@@ -25,12 +25,34 @@ async function saveList(formData: FormData) {
   const body = String(formData.get("body") ?? "");
   const intent = String(formData.get("intent") ?? "");
 
+  const [card] = await db.select().from(client).where(eq(client.id, clientId));
+  if (!card) {
+    redirect("/dietitian");
+  }
+
   const [list] = await db
     .select()
     .from(dietList)
     .where(eq(dietList.clientId, clientId));
 
-  if (!list || list.authorId !== session.id) {
+  if (!list) {
+    await db.insert(dietList).values({
+      clientId,
+      authorId: session.id,
+      body,
+      status: intent === "sent" ? "sent" : "draft",
+      updatedAt: new Date(),
+    });
+    await db
+      .update(clientRequest)
+      .set({ status: "accepted" })
+      .where(
+        and(eq(clientRequest.clientId, clientId), eq(clientRequest.dietitianId, session.id)),
+      );
+    redirect(`/dietitian/clients/${clientId}`);
+  }
+
+  if (list.authorId !== session.id) {
     redirect(`/dietitian/clients/${clientId}`);
   }
 
@@ -42,6 +64,11 @@ async function saveList(formData: FormData) {
       updatedAt: new Date(),
     })
     .where(eq(dietList.id, list.id));
+
+  await db
+    .update(clientRequest)
+    .set({ status: "accepted" })
+    .where(and(eq(clientRequest.clientId, clientId), eq(clientRequest.dietitianId, session.id)));
 
   redirect(`/dietitian/clients/${clientId}`);
 }
@@ -55,17 +82,20 @@ async function DietListPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
   const [card] = await db.select().from(client).where(eq(client.id, id));
   const [list] = await db.select().from(dietList).where(eq(dietList.clientId, id));
+  const [request] = await db
+    .select()
+    .from(clientRequest)
+    .where(and(eq(clientRequest.clientId, id), eq(clientRequest.status, "pending")));
 
-  if (!card || !list) {
+  if (!card) {
     redirect("/dietitian");
   }
 
-  const [author] = await db
-    .select()
-    .from(dietitian)
-    .where(eq(dietitian.id, list.authorId));
+  const [author] = list
+    ? await db.select().from(dietitian).where(eq(dietitian.id, list.authorId))
+    : [];
 
-  const canEdit = list.authorId === session.id;
+  const canEdit = !list || list.authorId === session.id;
 
   return (
     <Screen
@@ -80,11 +110,18 @@ async function DietListPage({ params }: { params: Promise<{ id: string }> }) {
       <BackLink href="/dietitian">Danışanlar</BackLink>
       <div className="mt-6 mb-6 flex flex-wrap items-center gap-3">
         <h1 className="text-3xl font-semibold tracking-tight">{card.name}</h1>
-        <ListStatus status={list.status} />
+        {list ? <ListStatus status={list.status} /> : <ListStatus status={null} />}
       </div>
       <p className="mb-6 text-sm text-[#6b6b66]">
-        {author?.name} yazdı. {canEdit ? "Düzenleyebilirsin." : "Okuyorsun."}
+        {list
+          ? `${author?.name} yazdı. ${canEdit ? "Düzenleyebilirsin." : "Okuyorsun."}`
+          : "Liste yok. Yazınca senin adın yazar."}
       </p>
+      {request ? (
+        <p className="mb-6 rounded-lg border border-[#eadfc4] bg-[#fbf8f1] px-4 py-3 text-sm">
+          Talep: {request.message || "Liste istiyor."}
+        </p>
+      ) : null}
       {canEdit ? (
         <form
           action={saveList}
@@ -93,7 +130,7 @@ async function DietListPage({ params }: { params: Promise<{ id: string }> }) {
           <input type="hidden" name="clientId" value={card.id} />
           <textarea
             name="body"
-            defaultValue={list.body}
+            defaultValue={list?.body ?? ""}
             rows={12}
             className="w-full resize-y px-8 py-8 text-[15px] leading-8 outline-none"
           />
@@ -108,7 +145,7 @@ async function DietListPage({ params }: { params: Promise<{ id: string }> }) {
         </form>
       ) : (
         <article className="rounded-lg border border-[#e6e6e2] bg-white px-8 py-8 shadow-[0_1px_2px_rgba(28,28,26,0.04)]">
-          <p className="whitespace-pre-wrap text-[15px] leading-8">{list.body}</p>
+          <p className="whitespace-pre-wrap text-[15px] leading-8">{list?.body}</p>
         </article>
       )}
     </Screen>

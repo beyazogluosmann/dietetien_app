@@ -27,6 +27,20 @@ export const clientAccount = pgTable("client_account", {
   passwordHash: text("password_hash").notNull(),
 });
 
+export const clientRequest = pgTable("client_request", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  clientId: uuid("client_id")
+    .notNull()
+    .unique()
+    .references(() => client.id),
+  dietitianId: uuid("dietitian_id")
+    .notNull()
+    .references(() => dietitian.id),
+  message: text("message").notNull().default(""),
+  status: text("status").notNull().default("pending"),
+  createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+});
+
 export const dietList = pgTable("diet_list", {
   id: uuid("id").primaryKey().defaultRandom(),
   clientId: uuid("client_id")

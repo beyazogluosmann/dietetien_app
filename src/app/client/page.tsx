@@ -4,7 +4,7 @@ import { eq } from "drizzle-orm";
 import { getSession } from "@/auth/session";
 import { Screen, SignOutButton } from "@/components/ui";
 import { db } from "@/db";
-import { client, dietList, dietitian } from "@/db/schema";
+import { client, clientRequest, dietList, dietitian } from "@/db/schema";
 
 async function ClientRoom() {
   const session = await getSession();
@@ -31,6 +31,16 @@ async function ClientRoom() {
     .leftJoin(dietitian, eq(dietList.authorId, dietitian.id))
     .where(eq(dietList.clientId, person.id));
 
+  const [chosen] = await db
+    .select()
+    .from(dietitian)
+    .where(eq(dietitian.id, person.dietitianId));
+
+  const [request] = await db
+    .select()
+    .from(clientRequest)
+    .where(eq(clientRequest.clientId, person.id));
+
   const visibleList = list?.status === "sent" ? list : null;
 
   return (
@@ -54,7 +64,9 @@ async function ClientRoom() {
         </article>
       ) : (
         <p className="rounded-lg border border-[#e6e6e2] bg-white px-8 py-8 text-sm text-[#6b6b66]">
-          Yayınlanmış bir listen yok. Diyetisyenin yayınlayınca burada görünür.
+          {request?.status === "pending"
+            ? `${chosen?.name ?? "Diyetisyenin"} talebini aldı. Listeyi yazınca burada görünür.`
+            : "Yayınlanmış bir listen yok. Diyetisyenin yayınlayınca burada görünür."}
         </p>
       )}
     </Screen>

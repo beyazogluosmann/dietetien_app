@@ -1,11 +1,11 @@
 import { Suspense } from "react";
 import Link from "next/link";
 import { redirect } from "next/navigation";
-import { eq } from "drizzle-orm";
+import { and, eq } from "drizzle-orm";
 import { getSession } from "@/auth/session";
 import { linkClass, ListStatus, Screen, SignOutButton } from "@/components/ui";
 import { db } from "@/db";
-import { client, clientAccount, dietList, dietitian } from "@/db/schema";
+import { client, clientAccount, clientRequest, dietList, dietitian } from "@/db/schema";
 
 async function DietitianRoom() {
   const session = await getSession();
@@ -21,6 +21,17 @@ async function DietitianRoom() {
   if (!person) {
     redirect("/");
   }
+
+  const requests = await db
+    .select({
+      id: clientRequest.id,
+      clientId: client.id,
+      clientName: client.name,
+      message: clientRequest.message,
+    })
+    .from(clientRequest)
+    .innerJoin(client, eq(clientRequest.clientId, client.id))
+    .where(and(eq(clientRequest.dietitianId, person.id), eq(clientRequest.status, "pending")));
 
   const rows = await db
     .select({
@@ -49,6 +60,23 @@ async function DietitianRoom() {
         <h1 className="text-3xl font-semibold tracking-tight">Danışanlar</h1>
         <p className="mt-1 text-sm text-[#6b6b66]">{rows.length} kayıt</p>
       </div>
+      {requests.length > 0 ? (
+        <section className="mb-6 rounded-lg border border-[#eadfc4] bg-[#fbf8f1] p-4">
+          <h2 className="text-sm font-medium">Talepler</h2>
+          <ul className="mt-3 flex flex-col gap-3">
+            {requests.map((request) => (
+              <li key={request.id}>
+                <Link href={`/dietitian/clients/${request.clientId}`} className={linkClass}>
+                  {request.clientName}
+                </Link>
+                <p className="mt-1 text-sm text-[#6b6b66]">
+                  {request.message || "Liste istiyor."}
+                </p>
+              </li>
+            ))}
+          </ul>
+        </section>
+      ) : null}
       <div className="overflow-hidden rounded-lg border border-[#e6e6e2] bg-white">
         <table className="w-full text-left text-sm">
           <thead className="border-b border-[#eee] bg-[#fafaf8] text-xs text-[#6b6b66]">
