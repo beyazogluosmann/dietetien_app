@@ -2,6 +2,7 @@ import { Suspense } from "react";
 import { redirect } from "next/navigation";
 import { and, asc, eq } from "drizzle-orm";
 import { getSession } from "@/auth/session";
+import { ChangePasswordForm } from "@/components/change-password";
 import { fieldClass, primaryButtonClass, Screen, SignOutButton } from "@/components/ui";
 import { db } from "@/db";
 import { client, clientRequest, dietList, dietitian } from "@/db/schema";
@@ -38,7 +39,12 @@ async function requestAgain(formData: FormData) {
   redirect("/client");
 }
 
-async function ClientRoom() {
+async function ClientRoom({
+  searchParams,
+}: {
+  searchParams: Promise<{ password?: string }>;
+}) {
+  const { password } = await searchParams;
   const session = await getSession();
   if (!session || session.role !== "client") {
     redirect("/");
@@ -134,14 +140,19 @@ async function ClientRoom() {
             : "Yayınlanmış bir listen yok. Diyetisyenin yayınlayınca burada görünür."}
         </p>
       )}
+      <ChangePasswordForm code={password} />
     </Screen>
   );
 }
 
-export default function ClientPage() {
+export default function ClientPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ password?: string }>;
+}) {
   return (
     <Suspense>
-      <ClientRoom />
+      <ClientRoom searchParams={searchParams} />
     </Suspense>
   );
 }

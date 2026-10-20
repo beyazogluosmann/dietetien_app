@@ -3,11 +3,17 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import { and, eq } from "drizzle-orm";
 import { getSession } from "@/auth/session";
+import { ChangePasswordForm } from "@/components/change-password";
 import { linkClass, ListStatus, Screen, SignOutButton } from "@/components/ui";
 import { db } from "@/db";
 import { client, clientAccount, clientRequest, dietList, dietitian } from "@/db/schema";
 
-async function DietitianRoom() {
+async function DietitianRoom({
+  searchParams,
+}: {
+  searchParams: Promise<{ password?: string }>;
+}) {
+  const { password } = await searchParams;
   const session = await getSession();
   if (!session || session.role !== "dietitian") {
     redirect("/");
@@ -107,14 +113,19 @@ async function DietitianRoom() {
           </tbody>
         </table>
       </div>
+      <ChangePasswordForm code={password} />
     </Screen>
   );
 }
 
-export default function DietitianPage() {
+export default function DietitianPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ password?: string }>;
+}) {
   return (
     <Suspense>
-      <DietitianRoom />
+      <DietitianRoom searchParams={searchParams} />
     </Suspense>
   );
 }

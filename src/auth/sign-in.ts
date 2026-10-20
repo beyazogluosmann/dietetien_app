@@ -1,26 +1,11 @@
-import { scryptSync, timingSafeEqual } from "node:crypto";
 import { eq } from "drizzle-orm";
+import { passwordMatches } from "@/auth/password";
 import { db } from "@/db";
 import { clientAccount, dietitian } from "@/db/schema";
 
 export type SignInResult =
   | { role: "dietitian"; dietitianId: string }
   | { role: "client"; clientId: string };
-
-function passwordMatches(password: string, stored: string) {
-  const [method, salt, hash] = stored.split(":");
-  if (method !== "scrypt" || !salt || !hash) {
-    return false;
-  }
-
-  const actual = scryptSync(password, salt, 64);
-  const expected = Buffer.from(hash, "hex");
-  if (actual.length !== expected.length) {
-    return false;
-  }
-
-  return timingSafeEqual(actual, expected);
-}
 
 export async function signIn(
   email: string,
