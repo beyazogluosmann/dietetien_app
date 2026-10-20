@@ -109,7 +109,7 @@ async function DietListPage({ params }: { params: Promise<{ id: string }> }) {
   const [request] = await db
     .select()
     .from(clientRequest)
-    .where(and(eq(clientRequest.clientId, id), eq(clientRequest.status, "pending")));
+    .where(eq(clientRequest.clientId, id));
 
   if (!card) {
     redirect("/dietitian");
@@ -137,13 +137,19 @@ async function DietListPage({ params }: { params: Promise<{ id: string }> }) {
         </div>
         <p className="mt-2 text-sm text-[#6b6b66]">Telefon numarası: {card.phone}</p>
         <p className="mt-1 text-sm text-[#6b6b66]">E-posta: {account?.email ?? "Hesabı yok"}</p>
+        {request && request.status !== "pending" ? (
+          <p className="mt-1 text-sm text-[#6b6b66]">
+            Talep: {request.message || "Liste istiyor."} ·{" "}
+            {request.status === "accepted" ? "Kabul edildi" : "Reddedildi"}
+          </p>
+        ) : null}
       </div>
       <p className="mb-6 text-sm text-[#6b6b66]">
         {list
           ? `${author?.name} yazdı. ${canEdit ? "Düzenleyebilirsin." : "Okuyorsun."}`
           : "Liste yok. Yazınca senin adın yazar."}
       </p>
-      {request ? (
+      {request?.status === "pending" ? (
         <div className="mb-6 flex flex-wrap items-center justify-between gap-3 rounded-lg border border-[#eadfc4] bg-[#fbf8f1] px-4 py-3">
           <p className="text-sm">Talep: {request.message || "Liste istiyor."}</p>
           {request.dietitianId === session.id ? (
