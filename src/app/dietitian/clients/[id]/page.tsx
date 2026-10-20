@@ -11,7 +11,7 @@ import {
   Screen,
 } from "@/components/ui";
 import { db } from "@/db";
-import { client, clientRequest, dietList, dietitian } from "@/db/schema";
+import { client, clientAccount, clientRequest, dietList, dietitian } from "@/db/schema";
 
 async function saveList(formData: FormData) {
   "use server";
@@ -104,6 +104,7 @@ async function DietListPage({ params }: { params: Promise<{ id: string }> }) {
 
   const { id } = await params;
   const [card] = await db.select().from(client).where(eq(client.id, id));
+  const [account] = await db.select().from(clientAccount).where(eq(clientAccount.clientId, id));
   const [list] = await db.select().from(dietList).where(eq(dietList.clientId, id));
   const [request] = await db
     .select()
@@ -134,7 +135,8 @@ async function DietListPage({ params }: { params: Promise<{ id: string }> }) {
           <h1 className="text-3xl font-semibold tracking-tight">{card.name}</h1>
           {list ? <ListStatus status={list.status} /> : <ListStatus status={null} />}
         </div>
-        <p className="mt-2 text-sm text-[#6b6b66]">{card.phone}</p>
+        <p className="mt-2 text-sm text-[#6b6b66]">Telefon numarası: {card.phone}</p>
+        <p className="mt-1 text-sm text-[#6b6b66]">E-posta: {account?.email ?? "Hesabı yok"}</p>
       </div>
       <p className="mb-6 text-sm text-[#6b6b66]">
         {list
