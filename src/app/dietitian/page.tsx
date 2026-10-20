@@ -3,17 +3,11 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import { and, eq } from "drizzle-orm";
 import { getSession } from "@/auth/session";
-import { ChangePasswordForm } from "@/components/change-password";
-import { linkClass, ListStatus, Screen, SignOutButton } from "@/components/ui";
+import { AccountMenu, linkClass, ListStatus, Screen } from "@/components/ui";
 import { db } from "@/db";
 import { client, clientAccount, clientRequest, dietList, dietitian } from "@/db/schema";
 
-async function DietitianRoom({
-  searchParams,
-}: {
-  searchParams: Promise<{ password?: string }>;
-}) {
-  const { password } = await searchParams;
+async function DietitianRoom() {
   const session = await getSession();
   if (!session || session.role !== "dietitian") {
     redirect("/");
@@ -56,10 +50,7 @@ async function DietitianRoom({
   return (
     <Screen
       actions={
-        <div className="flex items-center gap-4">
-          <p className="hidden text-sm text-[#6b6b66] sm:block">{person.name}</p>
-          <SignOutButton />
-        </div>
+        <AccountMenu name={person.name} />
       }
     >
       <div className="mb-6">
@@ -113,19 +104,14 @@ async function DietitianRoom({
           </tbody>
         </table>
       </div>
-      <ChangePasswordForm code={password} />
     </Screen>
   );
 }
 
-export default function DietitianPage({
-  searchParams,
-}: {
-  searchParams: Promise<{ password?: string }>;
-}) {
+export default function DietitianPage() {
   return (
     <Suspense>
-      <DietitianRoom searchParams={searchParams} />
+      <DietitianRoom />
     </Suspense>
   );
 }

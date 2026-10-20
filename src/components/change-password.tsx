@@ -21,39 +21,38 @@ export function ChangePasswordForm({ code }: { code?: string }) {
   const message = notice(code);
 
   return (
-    <section className="mt-10 rounded-lg border border-[#e6e6e2] bg-white p-4">
-      <h2 className="text-sm font-medium">Şifre değiştir</h2>
-      <form action={changePassword} className="mt-4 flex max-w-sm flex-col gap-4">
-        <label className="flex flex-col gap-1 text-sm">
-          Mevcut şifre
-          <input
-            name="current"
-            type="password"
-            autoComplete="current-password"
-            className={fieldClass}
-          />
-        </label>
-        <label className="flex flex-col gap-1 text-sm">
-          Yeni şifre
-          <input name="next" type="password" autoComplete="new-password" className={fieldClass} />
-        </label>
-        <label className="flex flex-col gap-1 text-sm">
-          Yeni şifre tekrar
-          <input name="again" type="password" autoComplete="new-password" className={fieldClass} />
-        </label>
-        <button type="submit" className={`${primaryButtonClass} justify-center`}>
-          Kaydet
-        </button>
-      </form>
+    <form action={changePassword} className="mt-8 flex flex-col gap-4">
       {message ? (
         <p
-          className={`mt-4 rounded-lg px-3 py-2 text-sm ${
+          className={`rounded-lg px-3 py-2 text-sm ${
             message.bad ? "bg-[#fde8e4] text-[#8a2e22]" : "bg-[#eef6f0] text-[#245c3a]"
           }`}
         >
           {message.text}
         </p>
       ) : null}
-    </section>
+      <label className="flex flex-col gap-1 text-sm">
+        Mevcut şifre
+        <input
+          name="current"
+          type="password"
+          autoComplete="current-password"
+          className={fieldClass}
+        />
+      </label>
+      <label className="flex flex-col gap-1 text-sm">
+        Yeni şifre
+        <input name="next" type="password" autoComplete="new-password" className={fieldClass} />
+      </label>
+      <label className="flex flex-col gap-1 text-sm">
+        Yeni şifre tekrar
+        <input name="again" type="password" autoComplete="new-password" className={fieldClass} />
+      </label>
+      <div className="mt-2 flex justify-end">
+        <button type="submit" className={primaryButtonClass}>
+          Kaydet
+        </button>
+      </div>
+    </form>
   );
 }

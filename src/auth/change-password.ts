@@ -13,30 +13,29 @@ export async function changePassword(formData: FormData) {
     redirect("/");
   }
 
-  const home = session.role === "dietitian" ? "/dietitian" : "/client";
   const current = String(formData.get("current") ?? "");
   const next = String(formData.get("next") ?? "");
   const again = String(formData.get("again") ?? "");
 
   if (!current || !next || !again) {
-    redirect(`${home}?password=missing`);
+    redirect("/account?password=missing");
   }
 
   if (next !== again) {
-    redirect(`${home}?password=match`);
+    redirect("/account?password=match");
   }
 
   if (session.role === "dietitian") {
     const [person] = await db.select().from(dietitian).where(eq(dietitian.id, session.id));
     if (!person || !passwordMatches(current, person.passwordHash)) {
-      redirect(`${home}?password=wrong`);
+      redirect("/account?password=wrong");
     }
 
     await db
       .update(dietitian)
       .set({ passwordHash: hashPassword(next) })
       .where(eq(dietitian.id, session.id));
-    redirect(`${home}?password=saved`);
+    redirect("/account?password=saved");
   }
 
   const [account] = await db
@@ -45,7 +44,7 @@ export async function changePassword(formData: FormData) {
     .where(eq(clientAccount.clientId, session.id));
 
   if (!account || !passwordMatches(current, account.passwordHash)) {
-    redirect(`${home}?password=wrong`);
+    redirect("/account?password=wrong");
   }
 
   await db
@@ -53,5 +52,5 @@ export async function changePassword(formData: FormData) {
     .set({ passwordHash: hashPassword(next) })
     .where(eq(clientAccount.clientId, session.id));
 
-  redirect(`${home}?password=saved`);
+  redirect("/account?password=saved");
 }

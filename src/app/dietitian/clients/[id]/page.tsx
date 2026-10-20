@@ -3,12 +3,12 @@ import { redirect } from "next/navigation";
 import { and, eq } from "drizzle-orm";
 import { getSession } from "@/auth/session";
 import {
+  AccountMenu,
   BackLink,
   buttonClass,
   ListStatus,
   primaryButtonClass,
   Screen,
-  SignOutButton,
 } from "@/components/ui";
 import { db } from "@/db";
 import { client, clientRequest, dietList, dietitian } from "@/db/schema";
@@ -114,6 +114,7 @@ async function DietListPage({ params }: { params: Promise<{ id: string }> }) {
     redirect("/dietitian");
   }
 
+  const [me] = await db.select().from(dietitian).where(eq(dietitian.id, session.id));
   const [author] = list
     ? await db.select().from(dietitian).where(eq(dietitian.id, list.authorId))
     : [];
@@ -124,10 +125,7 @@ async function DietListPage({ params }: { params: Promise<{ id: string }> }) {
     <Screen
       width="max-w-2xl"
       actions={
-        <div className="flex items-center gap-4">
-          <p className="hidden text-sm text-[#6b6b66] sm:block">{card.name}</p>
-          <SignOutButton />
-        </div>
+        <AccountMenu name={me?.name ?? "Hesap"} />
       }
     >
       <BackLink href="/dietitian">Danışanlar</BackLink>

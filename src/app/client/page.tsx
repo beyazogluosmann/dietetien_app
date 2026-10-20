@@ -2,8 +2,7 @@ import { Suspense } from "react";
 import { redirect } from "next/navigation";
 import { and, asc, eq } from "drizzle-orm";
 import { getSession } from "@/auth/session";
-import { ChangePasswordForm } from "@/components/change-password";
-import { fieldClass, primaryButtonClass, Screen, SignOutButton } from "@/components/ui";
+import { AccountMenu, fieldClass, primaryButtonClass, Screen } from "@/components/ui";
 import { db } from "@/db";
 import { client, clientRequest, dietList, dietitian } from "@/db/schema";
 
@@ -39,12 +38,7 @@ async function requestAgain(formData: FormData) {
   redirect("/client");
 }
 
-async function ClientRoom({
-  searchParams,
-}: {
-  searchParams: Promise<{ password?: string }>;
-}) {
-  const { password } = await searchParams;
+async function ClientRoom() {
   const session = await getSession();
   if (!session || session.role !== "client") {
     redirect("/");
@@ -90,10 +84,7 @@ async function ClientRoom({
     <Screen
       width="max-w-2xl"
       actions={
-        <div className="flex items-center gap-4">
-          <p className="hidden text-sm text-[#6b6b66] sm:block">{person.name}</p>
-          <SignOutButton />
-        </div>
+        <AccountMenu name={person.name} />
       }
     >
       <div className="mb-8">
@@ -140,19 +131,14 @@ async function ClientRoom({
             : "Yayınlanmış bir listen yok. Diyetisyenin yayınlayınca burada görünür."}
         </p>
       )}
-      <ChangePasswordForm code={password} />
     </Screen>
   );
 }
 
-export default function ClientPage({
-  searchParams,
-}: {
-  searchParams: Promise<{ password?: string }>;
-}) {
+export default function ClientPage() {
   return (
     <Suspense>
-      <ClientRoom searchParams={searchParams} />
+      <ClientRoom />
     </Suspense>
   );
 }
