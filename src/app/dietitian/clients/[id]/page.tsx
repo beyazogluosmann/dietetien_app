@@ -129,9 +129,12 @@ async function DietListPage({ params }: { params: Promise<{ id: string }> }) {
       }
     >
       <BackLink href="/dietitian">Danışanlar</BackLink>
-      <div className="mt-6 mb-6 flex flex-wrap items-center gap-3">
-        <h1 className="text-3xl font-semibold tracking-tight">{card.name}</h1>
-        {list ? <ListStatus status={list.status} /> : <ListStatus status={null} />}
+      <div className="mt-6 mb-6">
+        <div className="flex flex-wrap items-center gap-3">
+          <h1 className="text-3xl font-semibold tracking-tight">{card.name}</h1>
+          {list ? <ListStatus status={list.status} /> : <ListStatus status={null} />}
+        </div>
+        <p className="mt-2 text-sm text-[#6b6b66]">{card.phone}</p>
       </div>
       <p className="mb-6 text-sm text-[#6b6b66]">
         {list
