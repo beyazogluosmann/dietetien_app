@@ -7,6 +7,13 @@ import { AccountMenu, linkClass, ListStatus, Screen } from "@/components/ui";
 import { db } from "@/db";
 import { client, clientAccount, clientRequest, dietList, dietitian } from "@/db/schema";
 
+function requestLabel(status: string | null) {
+  if (status === "pending") return "Bekliyor";
+  if (status === "accepted") return "Kabul edildi";
+  if (status === "rejected") return "Reddedildi";
+  return "Talep yok";
+}
+
 async function DietitianRoom() {
   const session = await getSession();
   if (!session || session.role !== "dietitian") {
@@ -40,11 +47,13 @@ async function DietitianRoom() {
       dietitianName: dietitian.name,
       status: dietList.status,
       accountId: clientAccount.id,
+      requestStatus: clientRequest.status,
     })
     .from(client)
     .innerJoin(dietitian, eq(client.dietitianId, dietitian.id))
     .leftJoin(dietList, eq(dietList.clientId, client.id))
     .leftJoin(clientAccount, eq(clientAccount.clientId, client.id))
+    .leftJoin(clientRequest, eq(clientRequest.clientId, client.id))
     .orderBy(client.name);
 
   return (
@@ -79,6 +88,7 @@ async function DietitianRoom() {
           <thead className="border-b border-[#eee] bg-[#fafaf8] text-xs text-[#6b6b66]">
             <tr>
               <th className="px-4 py-3 font-medium">Danışan</th>
+              <th className="px-4 py-3 font-medium">Talep</th>
               <th className="px-4 py-3 font-medium">Sorumlu</th>
               <th className="px-4 py-3 font-medium">Liste</th>
               <th className="px-4 py-3 font-medium">Giriş</th>
@@ -92,6 +102,7 @@ async function DietitianRoom() {
                     {row.name}
                   </Link>
                 </td>
+                <td className="px-4 py-3.5 text-[#6b6b66]">{requestLabel(row.requestStatus)}</td>
                 <td className="px-4 py-3.5 text-[#6b6b66]">{row.dietitianName}</td>
                 <td className="px-4 py-3.5">
                   <ListStatus status={row.status} />
