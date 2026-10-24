@@ -1,8 +1,9 @@
 import { Suspense } from "react";
 import Link from "next/link";
 import { redirect } from "next/navigation";
-import { and, eq } from "drizzle-orm";
+import { and, eq, ilike } from "drizzle-orm";
 import { getSession } from "@/auth/session";
+import { ClientSearch } from "@/components/client-search";
 import { AccountMenu, linkClass, ListStatus, Screen } from "@/components/ui";
 import { db } from "@/db";
 import { client, clientAccount, clientRequest, dietList, dietitian } from "@/db/schema";
@@ -14,7 +15,13 @@ function requestLabel(status: string | null) {
   return "Talep yok";
 }
 
-async function DietitianRoom() {
+async function DietitianRoom({
+  searchParams,
+}: {
+  searchParams: Promise<{ q?: string }>;
+}) {
+  const { q } = await searchParams;
+  const query = (q ?? "").trim();
   const session = await getSession();
   if (!session || session.role !== "dietitian") {
     redirect("/");
@@ -40,7 +47,8 @@ async function DietitianRoom() {
     .innerJoin(client, eq(clientRequest.clientId, client.id))
     .where(and(eq(clientRequest.dietitianId, person.id), eq(clientRequest.status, "pending")));
 
-  const rows = await db
+  const pattern = `%${query.replace(/[%_\\]/g, "\\$&")}%`;
+  const clients = db
     .select({
       id: client.id,
       name: client.name,
@@ -53,8 +61,10 @@ async function DietitianRoom() {
     .innerJoin(dietitian, eq(client.dietitianId, dietitian.id))
     .leftJoin(dietList, eq(dietList.clientId, client.id))
     .leftJoin(clientAccount, eq(clientAccount.clientId, client.id))
-    .leftJoin(clientRequest, eq(clientRequest.clientId, client.id))
-    .orderBy(client.name);
+    .leftJoin(clientRequest, eq(clientRequest.clientId, client.id));
+  const rows = await (query ? clients.where(ilike(client.name, pattern)) : clients).orderBy(
+    client.name,
+  );
 
   return (
     <Screen
@@ -65,6 +75,7 @@ async function DietitianRoom() {
       <div className="mb-6">
         <h1 className="text-3xl font-semibold tracking-tight">Danışanlar</h1>
         <p className="mt-1 text-sm text-[#6b6b66]">{rows.length} kayıt</p>
+        <ClientSearch query={query} />
       </div>
       {requests.length > 0 ? (
         <section className="mb-6 rounded-lg border border-[#eadfc4] bg-[#fbf8f1] p-4">
@@ -95,6 +106,13 @@ async function DietitianRoom() {
             </tr>
           </thead>
           <tbody>
+            {rows.length === 0 ? (
+              <tr>
+                <td colSpan={5} className="px-4 py-8 text-sm text-[#6b6b66]">
+                  Bu ada uyan danışan yok.
+                </td>
+              </tr>
+            ) : null}
             {rows.map((row) => (
               <tr key={row.id} className="border-b border-[#f0f0ec] last:border-0 hover:bg-[#fafaf8]">
                 <td className="px-4 py-3.5">
@@ -119,10 +137,14 @@ async function DietitianRoom() {
   );
 }
 
-export default function DietitianPage() {
+export default function DietitianPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ q?: string }>;
+}) {
   return (
     <Suspense>
-      <DietitianRoom />
+      <DietitianRoom searchParams={searchParams} />
     </Suspense>
   );
 }
