@@ -26,7 +26,7 @@ async function saveList(formData: FormData) {
   const intent = String(formData.get("intent") ?? "");
 
   const [card] = await db.select().from(client).where(eq(client.id, clientId));
-  if (!card) {
+  if (!card || card.dietitianId !== session.id) {
     redirect("/dietitian");
   }
 
@@ -111,7 +111,7 @@ async function DietListPage({ params }: { params: Promise<{ id: string }> }) {
     .from(clientRequest)
     .where(eq(clientRequest.clientId, id));
 
-  if (!card) {
+  if (!card || card.dietitianId !== session.id) {
     redirect("/dietitian");
   }
 
@@ -137,12 +137,6 @@ async function DietListPage({ params }: { params: Promise<{ id: string }> }) {
         </div>
         <p className="mt-2 text-sm text-[#6b6b66]">Telefon numarası: {card.phone}</p>
         <p className="mt-1 text-sm text-[#6b6b66]">E-posta: {account?.email ?? "Hesabı yok"}</p>
-        {request && request.status !== "pending" ? (
-          <p className="mt-1 text-sm text-[#6b6b66]">
-            Talep: {request.message || "Liste istiyor."} ·{" "}
-            {request.status === "accepted" ? "Kabul edildi" : "Reddedildi"}
-          </p>
-        ) : null}
       </div>
       <p className="mb-6 text-sm text-[#6b6b66]">
         {list
