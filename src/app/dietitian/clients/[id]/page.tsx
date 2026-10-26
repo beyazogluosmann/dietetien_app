@@ -142,16 +142,16 @@ async function DietListPage({ params }: { params: Promise<{ id: string }> }) {
       <BackLink href="/dietitian">Danışanlar</BackLink>
       <div className="mt-6 mb-6">
         <div className="flex flex-wrap items-center gap-3">
-          <h1 className="text-3xl font-semibold tracking-tight">{card.name}</h1>
+          <h1 className="text-4xl font-semibold tracking-tight">{card.name}</h1>
           {list ? <ListStatus status={list.status} /> : <ListStatus status={null} />}
         </div>
-        <p className="mt-2 text-sm text-[#6b6b66]">Telefon numarası: {card.phone}</p>
-        <p className="mt-1 text-sm text-[#6b6b66]">E-posta: {account?.email ?? "Hesabı yok"}</p>
+        <p className="mt-3 text-sm text-[#6d6a62]">Telefon numarası: {card.phone}</p>
+        <p className="mt-1 text-sm text-[#6d6a62]">E-posta: {account?.email ?? "Hesabı yok"}</p>
       </div>
-      <section className="mb-6 rounded-lg border border-[#e6e6e2] bg-white px-4 py-4">
+      <section className="mb-6 rounded-2xl border border-[#e6e1d6] bg-white px-6 py-5 shadow-[0_16px_40px_rgba(31,77,58,0.06)]">
         <h2 className="text-sm font-medium">Anamnez</h2>
         {history ? (
-          <dl className="mt-3 grid gap-2 text-sm text-[#6b6b66]">
+          <dl className="mt-4 grid gap-3 text-sm text-[#6d6a62] sm:grid-cols-2">
             <div>Yaş: {history.age}</div>
             <div>Cinsiyet: {optionLabel(sexOptions, history.sex)}</div>
             <div>Boy: {history.heightCm} cm</div>
@@ -167,16 +167,16 @@ async function DietListPage({ params }: { params: Promise<{ id: string }> }) {
             <div>Not: {history.notes || "Yok"}</div>
           </dl>
         ) : (
-          <p className="mt-3 text-sm text-[#6b6b66]">Anamnez yok.</p>
+          <p className="mt-3 text-sm text-[#6d6a62]">Anamnez yok.</p>
         )}
       </section>
-      <p className="mb-6 text-sm text-[#6b6b66]">
+      <p className="mb-6 text-sm text-[#6d6a62]">
         {list
           ? `${author?.name} yazdı. ${canEdit ? "Düzenleyebilirsin." : "Okuyorsun."}`
           : "Liste yok. Yazınca senin adın yazar."}
       </p>
       {request?.status === "pending" ? (
-        <div className="mb-6 flex flex-wrap items-center justify-between gap-3 rounded-lg border border-[#eadfc4] bg-[#fbf8f1] px-4 py-3">
+        <div className="mb-6 flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-[#eadfc4] bg-[#fbf8f1] px-5 py-4">
           <p className="text-sm">Talep: {request.message || "Liste istiyor."}</p>
           {request.dietitianId === session.id ? (
             <form action={rejectRequest}>
@@ -191,7 +191,7 @@ async function DietListPage({ params }: { params: Promise<{ id: string }> }) {
       {canEdit ? (
         <form
           action={saveList}
-          className="overflow-hidden rounded-lg border border-[#e6e6e2] bg-white shadow-[0_1px_2px_rgba(28,28,26,0.04)]"
+          className="overflow-hidden rounded-2xl border border-[#e6e1d6] bg-white shadow-[0_16px_40px_rgba(31,77,58,0.06)]"
         >
           <input type="hidden" name="clientId" value={card.id} />
           <textarea
@@ -210,7 +210,7 @@ async function DietListPage({ params }: { params: Promise<{ id: string }> }) {
           </div>
         </form>
       ) : (
-        <article className="rounded-lg border border-[#e6e6e2] bg-white px-8 py-8 shadow-[0_1px_2px_rgba(28,28,26,0.04)]">
+        <article className="rounded-2xl border border-[#e6e1d6] bg-white px-8 py-8 shadow-[0_16px_40px_rgba(31,77,58,0.06)]">
           <p className="whitespace-pre-wrap text-[15px] leading-8">{list?.body}</p>
         </article>
       )}

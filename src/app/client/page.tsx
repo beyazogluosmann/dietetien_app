@@ -2,7 +2,7 @@ import { Suspense } from "react";
 import { redirect } from "next/navigation";
 import { and, asc, eq } from "drizzle-orm";
 import { getSession } from "@/auth/session";
-import { AccountMenu, fieldClass, primaryButtonClass, Screen } from "@/components/ui";
+import { AccountMenu, cardClass, fieldClass, mutedClass, primaryButtonClass, Screen } from "@/components/ui";
 import { db } from "@/db";
 import { anamnesis, client, clientRequest, dietList, dietitian } from "@/db/schema";
 
@@ -96,17 +96,17 @@ async function ClientRoom() {
       }
     >
       <div className="mb-8">
-        <p className="text-sm text-[#6b6b66]">Diyet listesi</p>
-        <h1 className="mt-1 text-3xl font-semibold tracking-tight">{person.name}</h1>
+        <p className="text-xs font-medium tracking-[0.14em] text-[#1f4d3a]">DİYET LİSTESİ</p>
+        <h1 className="mt-2 text-4xl font-semibold tracking-tight">{person.name}</h1>
       </div>
       {visibleList ? (
-        <article className="rounded-lg border border-[#e6e6e2] bg-white px-8 py-8 shadow-[0_1px_2px_rgba(28,28,26,0.04)]">
-          <p className="mb-6 text-sm text-[#6b6b66]">{visibleList.authorName} hazırladı</p>
-          <p className="whitespace-pre-wrap text-[15px] leading-8">{visibleList.body}</p>
+        <article className={`${cardClass} px-8 py-10`}>
+          <p className={`${mutedClass} mb-6`}>{visibleList.authorName} hazırladı</p>
+          <p className="whitespace-pre-wrap text-[16px] leading-8">{visibleList.body}</p>
         </article>
       ) : request?.status === "rejected" ? (
-        <div className="rounded-lg border border-[#e6e6e2] bg-white px-8 py-8">
-          <p className="text-sm text-[#6b6b66]">
+        <div className={`${cardClass} px-8 py-8`}>
+          <p className={mutedClass}>
             {chosen?.name ?? "Diyetisyenin"} talebi kabul etmedi. Başka bir diyetisyen seçebilirsin.
           </p>
           <form action={requestAgain} className="mt-6 flex flex-col gap-4">
@@ -133,7 +133,7 @@ async function ClientRoom() {
           </form>
         </div>
       ) : (
-        <p className="rounded-lg border border-[#e6e6e2] bg-white px-8 py-8 text-sm text-[#6b6b66]">
+        <p className={`${cardClass} px-8 py-8 ${mutedClass}`}>
           {request?.status === "pending"
             ? `${chosen?.name ?? "Diyetisyenin"} talebini aldı. Listeyi yazınca burada görünür.`
             : "Yayınlanmış bir listen yok. Diyetisyenin yayınlayınca burada görünür."}

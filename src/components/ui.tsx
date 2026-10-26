@@ -3,16 +3,21 @@ import Link from "next/link";
 import { signOut } from "@/auth/sign-out";
 
 export const linkClass =
-  "font-medium text-[#1c1c1a] underline decoration-[#1c1c1a]/30 underline-offset-4 hover:decoration-[#1c1c1a]";
+  "font-medium text-[#1f4d3a] underline decoration-[#1f4d3a]/30 underline-offset-4 hover:decoration-[#1f4d3a]";
 
 export const fieldClass =
-  "w-full rounded-md border border-[#e2e2de] bg-white px-3 py-2.5 text-sm outline-none focus:border-[#1c1c1a]";
+  "w-full rounded-xl border border-[#e6e1d6] bg-[#fcfbf8] px-3.5 py-3 text-sm outline-none transition focus:border-[#1f4d3a] focus:bg-white focus:ring-4 focus:ring-[#1f4d3a]/10";
 
 export const buttonClass =
-  "inline-flex h-9 items-center rounded-md border border-[#e2e2de] bg-white px-3 text-sm hover:bg-[#f6f6f4]";
+  "inline-flex h-10 items-center rounded-xl border border-[#e6e1d6] bg-white px-4 text-sm hover:bg-[#f6f4ef]";
 
 export const primaryButtonClass =
-  "inline-flex h-9 items-center rounded-md bg-[#1c1c1a] px-3 text-sm text-white hover:bg-[#333330]";
+  "inline-flex h-10 items-center rounded-xl bg-[#1f4d3a] px-4 text-sm font-medium text-white hover:bg-[#173c2d]";
+
+export const cardClass =
+  "rounded-2xl border border-[#e6e1d6] bg-white shadow-[0_16px_40px_rgba(31,77,58,0.06)]";
+
+export const mutedClass = "text-sm leading-6 text-[#6d6a62]";
 
 export function Screen({
   children,
@@ -24,11 +29,11 @@ export function Screen({
   width?: string;
 }) {
   return (
-    <div className="min-h-dvh bg-[#f7f7f5] text-[#1c1c1a]">
-      <header className="relative z-30 border-b border-[#e6e6e2] bg-white">
+    <div className="min-h-dvh bg-[#f3f0e8] text-[#1c1c1a]">
+      <header className="relative z-30 border-b border-[#e6e1d6] bg-white/90 backdrop-blur">
         <div className={`mx-auto flex h-16 items-center justify-between px-6 ${width}`}>
           <div className="flex items-center gap-2.5">
-            <span className="grid size-7 place-items-center rounded-md bg-[#1c1c1a] text-[11px] font-medium text-white">
+            <span className="grid size-8 place-items-center rounded-xl bg-[#1f4d3a] text-xs font-medium text-white">
               K
             </span>
             <span className="text-[15px] font-semibold tracking-tight">Klinik</span>
@@ -36,7 +41,7 @@ export function Screen({
           {actions}
         </div>
       </header>
-      <main className={`mx-auto w-full px-6 py-10 ${width}`}>{children}</main>
+      <main className={`mx-auto w-full px-6 py-12 ${width}`}>{children}</main>
     </div>
   );
 }
@@ -44,13 +49,13 @@ export function Screen({
 export function AccountMenu({ name }: { name: string }) {
   return (
     <details className="relative">
-      <summary className="flex cursor-pointer list-none items-center gap-1.5 text-sm text-[#6b6b66] hover:text-[#1c1c1a] [&::-webkit-details-marker]:hidden">
+      <summary className="flex cursor-pointer list-none items-center gap-2 rounded-full border border-[#e6e1d6] bg-[#fcfbf8] px-3 py-1.5 text-sm text-[#1c1c1a] hover:bg-white [&::-webkit-details-marker]:hidden">
         {name}
         <span aria-hidden="true" className="text-[10px]">
           ▾
         </span>
       </summary>
-      <div className="absolute right-0 z-20 mt-2 w-44 overflow-hidden rounded-lg border border-[#e6e6e2] bg-white py-1 shadow-[0_8px_24px_rgba(28,28,26,0.08)]">
+      <div className="absolute right-0 z-20 mt-2 w-44 overflow-hidden rounded-2xl border border-[#e6e1d6] bg-white py-1 shadow-[0_16px_40px_rgba(31,77,58,0.08)]">
         <Link href="/account" className="block px-3 py-2 text-sm hover:bg-[#fafaf8]">
           Şifre değiştir
         </Link>
@@ -75,7 +80,7 @@ export function ListStatus({ status }: { status: string | null }) {
         : "bg-[#f3f3f1] text-[#6b6b66]";
 
   return (
-    <span className={`inline-flex rounded-full px-2 py-0.5 text-xs font-medium ${tone}`}>
+    <span className={`inline-flex rounded-full px-2.5 py-1 text-xs font-medium ${tone}`}>
       {label}
     </span>
   );
@@ -83,7 +88,7 @@ export function ListStatus({ status }: { status: string | null }) {
 
 export function BackLink({ href, children }: { href: string; children: ReactNode }) {
   return (
-    <Link href={href} className="text-sm text-[#6b6b66] hover:text-[#1c1c1a]">
+    <Link href={href} className="text-sm text-[#6d6a62] hover:text-[#1f4d3a]">
       ← {children}
     </Link>
   );

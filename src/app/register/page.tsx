@@ -4,7 +4,7 @@ import { redirect } from "next/navigation";
 import { asc, eq } from "drizzle-orm";
 import { hashPassword } from "@/auth/password";
 import { setSession } from "@/auth/session";
-import { fieldClass, linkClass, primaryButtonClass, Screen } from "@/components/ui";
+import { cardClass, fieldClass, linkClass, mutedClass, primaryButtonClass, Screen } from "@/components/ui";
 import { db } from "@/db";
 import { client, clientAccount, clientRequest, dietitian } from "@/db/schema";
 
@@ -92,9 +92,10 @@ async function RegisterForm({
 
   return (
     <Screen width="max-w-md">
-      <div className="rounded-lg border border-[#e6e6e2] bg-white px-8 py-8 shadow-[0_1px_2px_rgba(28,28,26,0.04)]">
-        <h1 className="text-3xl font-semibold tracking-tight">Kayıt ol</h1>
-        <p className="mt-2 text-sm text-[#6b6b66]">
+      <div className={`${cardClass} px-8 py-10`}>
+        <p className="text-xs font-medium tracking-[0.14em] text-[#1f4d3a]">KLİNİK</p>
+        <h1 className="mt-3 text-4xl font-semibold tracking-tight">Kayıt ol</h1>
+        <p className={`${mutedClass} mt-2`}>
           Diyetisyenini seç. Talebin onun paneline düşer.
         </p>
         <form action={register} className="mt-8 flex flex-col gap-4">
