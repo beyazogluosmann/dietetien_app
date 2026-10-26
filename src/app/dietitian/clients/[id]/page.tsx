@@ -11,7 +11,15 @@ import {
   Screen,
 } from "@/components/ui";
 import { db } from "@/db";
-import { client, clientAccount, clientRequest, dietList, dietitian } from "@/db/schema";
+import {
+  activityOptions,
+  bodyMassIndex,
+  bodyMassLabel,
+  goalOptions,
+  optionLabel,
+  sexOptions,
+} from "@/anamnesis";
+import { anamnesis, client, clientAccount, clientRequest, dietList, dietitian } from "@/db/schema";
 
 async function saveList(formData: FormData) {
   "use server";
@@ -110,6 +118,8 @@ async function DietListPage({ params }: { params: Promise<{ id: string }> }) {
     .select()
     .from(clientRequest)
     .where(eq(clientRequest.clientId, id));
+  const [history] = await db.select().from(anamnesis).where(eq(anamnesis.clientId, id));
+  const index = history ? bodyMassIndex(history.heightCm, history.weightKg) : null;
 
   if (!card || card.dietitianId !== session.id) {
     redirect("/dietitian");
@@ -138,6 +148,28 @@ async function DietListPage({ params }: { params: Promise<{ id: string }> }) {
         <p className="mt-2 text-sm text-[#6b6b66]">Telefon numarası: {card.phone}</p>
         <p className="mt-1 text-sm text-[#6b6b66]">E-posta: {account?.email ?? "Hesabı yok"}</p>
       </div>
+      <section className="mb-6 rounded-lg border border-[#e6e6e2] bg-white px-4 py-4">
+        <h2 className="text-sm font-medium">Anamnez</h2>
+        {history ? (
+          <dl className="mt-3 grid gap-2 text-sm text-[#6b6b66]">
+            <div>Yaş: {history.age}</div>
+            <div>Cinsiyet: {optionLabel(sexOptions, history.sex)}</div>
+            <div>Boy: {history.heightCm} cm</div>
+            <div>Kilo: {history.weightKg} kg</div>
+            <div>
+              Beden kitle indeksi: {index} · {index !== null ? bodyMassLabel(index) : ""}
+            </div>
+            <div>Hedef: {optionLabel(goalOptions, history.goal)}</div>
+            <div>Hareket: {optionLabel(activityOptions, history.activity)}</div>
+            <div>Hastalık: {history.conditions || "Yok"}</div>
+            <div>Alerji: {history.allergies || "Yok"}</div>
+            <div>İlaç: {history.medications || "Yok"}</div>
+            <div>Not: {history.notes || "Yok"}</div>
+          </dl>
+        ) : (
+          <p className="mt-3 text-sm text-[#6b6b66]">Anamnez yok.</p>
+        )}
+      </section>
       <p className="mb-6 text-sm text-[#6b6b66]">
         {list
           ? `${author?.name} yazdı. ${canEdit ? "Düzenleyebilirsin." : "Okuyorsun."}`

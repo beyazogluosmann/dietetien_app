@@ -4,7 +4,7 @@ import { and, asc, eq } from "drizzle-orm";
 import { getSession } from "@/auth/session";
 import { AccountMenu, fieldClass, primaryButtonClass, Screen } from "@/components/ui";
 import { db } from "@/db";
-import { client, clientRequest, dietList, dietitian } from "@/db/schema";
+import { anamnesis, client, clientRequest, dietList, dietitian } from "@/db/schema";
 
 async function requestAgain(formData: FormData) {
   "use server";
@@ -51,6 +51,14 @@ async function ClientRoom() {
 
   if (!person) {
     redirect("/");
+  }
+
+  const [history] = await db
+    .select()
+    .from(anamnesis)
+    .where(eq(anamnesis.clientId, person.id));
+  if (!history) {
+    redirect("/anamnesis");
   }
 
   const [list] = await db

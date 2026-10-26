@@ -65,7 +65,7 @@ async function register(formData: FormData) {
   });
 
   await setSession({ role: "client", id: card.id });
-  redirect("/client");
+  redirect("/anamnesis");
 }
 
 function registerMessage(error: string | undefined) {

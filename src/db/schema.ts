@@ -41,6 +41,25 @@ export const clientRequest = pgTable("client_request", {
   createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
 });
 
+export const anamnesis = pgTable("anamnesis", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  clientId: uuid("client_id")
+    .notNull()
+    .unique()
+    .references(() => client.id),
+  age: text("age").notNull(),
+  sex: text("sex").notNull(),
+  heightCm: text("height_cm").notNull(),
+  weightKg: text("weight_kg").notNull(),
+  goal: text("goal").notNull(),
+  conditions: text("conditions").notNull().default(""),
+  allergies: text("allergies").notNull().default(""),
+  medications: text("medications").notNull().default(""),
+  activity: text("activity").notNull(),
+  notes: text("notes").notNull().default(""),
+  createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+});
+
 export const dietList = pgTable("diet_list", {
   id: uuid("id").primaryKey().defaultRandom(),
   clientId: uuid("client_id")
