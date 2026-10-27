@@ -1,7 +1,7 @@
 import { Suspense } from "react";
 import Link from "next/link";
 import { redirect } from "next/navigation";
-import { and, eq, ilike } from "drizzle-orm";
+import { and, eq, ilike, isNull, ne, or } from "drizzle-orm";
 import { getSession } from "@/auth/session";
 import { ClientSearch } from "@/components/client-search";
 import { AccountMenu, linkClass, ListStatus, Screen } from "@/components/ui";
@@ -52,8 +52,10 @@ async function DietitianRoom({
     .from(client)
     .innerJoin(dietitian, eq(client.dietitianId, dietitian.id))
     .leftJoin(dietList, eq(dietList.clientId, client.id))
-    .leftJoin(clientAccount, eq(clientAccount.clientId, client.id));
-  const mine = eq(client.dietitianId, person.id);
+    .leftJoin(clientAccount, eq(clientAccount.clientId, client.id))
+    .leftJoin(clientRequest, eq(clientRequest.clientId, client.id));
+  const visible = or(isNull(clientRequest.id), ne(clientRequest.status, "rejected"));
+  const mine = and(eq(client.dietitianId, person.id), visible);
   const rows = await (query
     ? clients.where(and(mine, ilike(client.name, pattern)))
     : clients.where(mine)

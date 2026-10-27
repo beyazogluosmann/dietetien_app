@@ -34,7 +34,11 @@ async function saveList(formData: FormData) {
   const intent = String(formData.get("intent") ?? "");
 
   const [card] = await db.select().from(client).where(eq(client.id, clientId));
-  if (!card || card.dietitianId !== session.id) {
+  const [request] = await db
+    .select()
+    .from(clientRequest)
+    .where(eq(clientRequest.clientId, clientId));
+  if (!card || card.dietitianId !== session.id || request?.status === "rejected") {
     redirect("/dietitian");
   }
 
@@ -101,7 +105,7 @@ async function rejectRequest(formData: FormData) {
       ),
     );
 
-  redirect(`/dietitian/clients/${clientId}`);
+  redirect("/dietitian");
 }
 
 async function DietListPage({ params }: { params: Promise<{ id: string }> }) {
@@ -121,7 +125,7 @@ async function DietListPage({ params }: { params: Promise<{ id: string }> }) {
   const [history] = await db.select().from(anamnesis).where(eq(anamnesis.clientId, id));
   const index = history ? bodyMassIndex(history.heightCm, history.weightKg) : null;
 
-  if (!card || card.dietitianId !== session.id) {
+  if (!card || card.dietitianId !== session.id || request?.status === "rejected") {
     redirect("/dietitian");
   }
 
