@@ -96,6 +96,45 @@ export function bodyMassIndex(heightCm: string, weightKg: string) {
   return Math.round((weight / (height * height)) * 10) / 10;
 }
 
+export type AnamnesisFormState = {
+  errors: {
+    age?: string;
+    sex?: string;
+    height?: string;
+    weight?: string;
+    goal?: string;
+    activity?: string;
+  };
+  values: {
+    age: string;
+    sex: string;
+    height: string;
+    weight: string;
+    goal: string;
+    activity: string;
+    conditions: string;
+    allergies: string;
+    medications: string;
+    notes: string;
+  };
+};
+
+export const emptyAnamnesisForm: AnamnesisFormState = {
+  errors: {},
+  values: {
+    age: "",
+    sex: "",
+    height: "",
+    weight: "",
+    goal: "",
+    activity: "",
+    conditions: "",
+    allergies: "",
+    medications: "",
+    notes: "",
+  },
+};
+
 export function bodyMassLabel(index: number) {
   if (index < 18.5) return "Zayıf";
   if (index < 25) return "Normal";
