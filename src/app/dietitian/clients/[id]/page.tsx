@@ -12,6 +12,8 @@ import {
 } from "@/components/ui";
 import { db } from "@/db";
 import { ClientProfile } from "@/components/client-profile";
+import { DietEditor } from "@/components/diet-editor";
+import { DietView } from "@/components/diet-view";
 import { anamnesis, client, clientAccount, clientRequest, dietList, dietitian } from "@/db/schema";
 
 async function saveList(formData: FormData) {
@@ -130,7 +132,7 @@ async function DietListPage({ params }: { params: Promise<{ id: string }> }) {
 
   return (
     <Screen
-      width="max-w-2xl"
+      width="max-w-3xl"
       actions={
         <AccountMenu name={me?.name ?? "Hesap"} />
       }
@@ -171,12 +173,7 @@ async function DietListPage({ params }: { params: Promise<{ id: string }> }) {
           className="overflow-hidden rounded-2xl border border-[#e6e1d6] bg-white shadow-[0_16px_40px_rgba(31,77,58,0.06)]"
         >
           <input type="hidden" name="clientId" value={card.id} />
-          <textarea
-            name="body"
-            defaultValue={list?.body ?? ""}
-            rows={12}
-            className="w-full resize-y px-8 py-8 text-[15px] leading-8 outline-none"
-          />
+          <DietEditor initialBody={list?.body ?? ""} />
           <div className="flex flex-wrap justify-end gap-2 border-t border-[#eee] bg-[#fafaf8] px-4 py-3">
             <button type="submit" name="intent" value="draft" className={buttonClass}>
               Taslağı kaydet
@@ -187,9 +184,7 @@ async function DietListPage({ params }: { params: Promise<{ id: string }> }) {
           </div>
         </form>
       ) : (
-        <article className="rounded-2xl border border-[#e6e1d6] bg-white px-8 py-8 shadow-[0_16px_40px_rgba(31,77,58,0.06)]">
-          <p className="whitespace-pre-wrap text-[15px] leading-8">{list?.body}</p>
-        </article>
+        <DietView body={list?.body ?? ""} />
       )}
     </Screen>
   );

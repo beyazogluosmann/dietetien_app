@@ -3,6 +3,7 @@ import { redirect } from "next/navigation";
 import { and, asc, eq } from "drizzle-orm";
 import { getSession } from "@/auth/session";
 import { ClientProfile } from "@/components/client-profile";
+import { DietView } from "@/components/diet-view";
 import { AccountMenu, cardClass, fieldClass, mutedClass, primaryButtonClass, Screen } from "@/components/ui";
 import { db } from "@/db";
 import { anamnesis, client, clientRequest, dietList, dietitian } from "@/db/schema";
@@ -91,7 +92,7 @@ async function ClientRoom() {
 
   return (
     <Screen
-      width="max-w-2xl"
+      width="max-w-3xl"
       actions={
         <AccountMenu name={person.name} />
       }
@@ -101,10 +102,7 @@ async function ClientRoom() {
         DİYET LİSTESİ
       </h2>
       {visibleList ? (
-        <article className={`${cardClass} px-8 py-10`}>
-          <p className={`${mutedClass} mb-6`}>{visibleList.authorName} hazırladı</p>
-          <p className="whitespace-pre-wrap text-[16px] leading-8">{visibleList.body}</p>
-        </article>
+        <DietView body={visibleList.body} authorName={visibleList.authorName} />
       ) : request?.status === "rejected" ? (
         <div className={`${cardClass} px-8 py-8`}>
           <p className={mutedClass}>
