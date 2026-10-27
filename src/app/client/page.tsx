@@ -2,6 +2,7 @@ import { Suspense } from "react";
 import { redirect } from "next/navigation";
 import { and, asc, eq } from "drizzle-orm";
 import { getSession } from "@/auth/session";
+import { ClientProfile } from "@/components/client-profile";
 import { AccountMenu, cardClass, fieldClass, mutedClass, primaryButtonClass, Screen } from "@/components/ui";
 import { db } from "@/db";
 import { anamnesis, client, clientRequest, dietList, dietitian } from "@/db/schema";
@@ -95,10 +96,10 @@ async function ClientRoom() {
         <AccountMenu name={person.name} />
       }
     >
-      <div className="mb-8">
-        <p className="text-xs font-medium tracking-[0.14em] text-[#1f4d3a]">DİYET LİSTESİ</p>
-        <h1 className="mt-2 text-4xl font-semibold tracking-tight">{person.name}</h1>
-      </div>
+      <ClientProfile name={person.name} phone={person.phone} history={history} />
+      <h2 className="mt-10 mb-4 text-xs font-medium tracking-[0.14em] text-[#1f4d3a]">
+        DİYET LİSTESİ
+      </h2>
       {visibleList ? (
         <article className={`${cardClass} px-8 py-10`}>
           <p className={`${mutedClass} mb-6`}>{visibleList.authorName} hazırladı</p>

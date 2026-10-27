@@ -11,14 +11,7 @@ import {
   Screen,
 } from "@/components/ui";
 import { db } from "@/db";
-import {
-  activityOptions,
-  bodyMassIndex,
-  bodyMassLabel,
-  goalOptions,
-  optionLabel,
-  sexOptions,
-} from "@/anamnesis";
+import { ClientProfile } from "@/components/client-profile";
 import { anamnesis, client, clientAccount, clientRequest, dietList, dietitian } from "@/db/schema";
 
 async function saveList(formData: FormData) {
@@ -123,7 +116,6 @@ async function DietListPage({ params }: { params: Promise<{ id: string }> }) {
     .from(clientRequest)
     .where(eq(clientRequest.clientId, id));
   const [history] = await db.select().from(anamnesis).where(eq(anamnesis.clientId, id));
-  const index = history ? bodyMassIndex(history.heightCm, history.weightKg) : null;
 
   if (!card || card.dietitianId !== session.id || request?.status === "rejected") {
     redirect("/dietitian");
@@ -144,36 +136,17 @@ async function DietListPage({ params }: { params: Promise<{ id: string }> }) {
       }
     >
       <BackLink href="/dietitian">Danışanlar</BackLink>
-      <div className="mt-6 mb-6">
-        <div className="flex flex-wrap items-center gap-3">
-          <h1 className="text-4xl font-semibold tracking-tight">{card.name}</h1>
-          {list ? <ListStatus status={list.status} /> : <ListStatus status={null} />}
-        </div>
-        <p className="mt-3 text-sm text-[#6d6a62]">Telefon numarası: {card.phone}</p>
-        <p className="mt-1 text-sm text-[#6d6a62]">E-posta: {account?.email ?? "Hesabı yok"}</p>
+      <div className="mt-6">
+        <ClientProfile
+          name={card.name}
+          phone={card.phone}
+          email={account?.email ?? "Hesabı yok"}
+          history={history ?? null}
+        />
       </div>
-      <section className="mb-6 rounded-2xl border border-[#e6e1d6] bg-white px-6 py-5 shadow-[0_16px_40px_rgba(31,77,58,0.06)]">
-        <h2 className="text-sm font-medium">Anamnez</h2>
-        {history ? (
-          <dl className="mt-4 grid gap-3 text-sm text-[#6d6a62] sm:grid-cols-2">
-            <div>Yaş: {history.age}</div>
-            <div>Cinsiyet: {optionLabel(sexOptions, history.sex)}</div>
-            <div>Boy: {history.heightCm} cm</div>
-            <div>Kilo: {history.weightKg} kg</div>
-            <div>
-              Beden kitle indeksi: {index} · {index !== null ? bodyMassLabel(index) : ""}
-            </div>
-            <div>Hedef: {optionLabel(goalOptions, history.goal)}</div>
-            <div>Hareket: {optionLabel(activityOptions, history.activity)}</div>
-            <div>Hastalık: {history.conditions || "Yok"}</div>
-            <div>Alerji: {history.allergies || "Yok"}</div>
-            <div>İlaç: {history.medications || "Yok"}</div>
-            <div>Not: {history.notes || "Yok"}</div>
-          </dl>
-        ) : (
-          <p className="mt-3 text-sm text-[#6d6a62]">Anamnez yok.</p>
-        )}
-      </section>
+      <div className="mt-6 mb-6">
+        {list ? <ListStatus status={list.status} /> : <ListStatus status={null} />}
+      </div>
       <p className="mb-6 text-sm text-[#6d6a62]">
         {list
           ? `${author?.name} yazdı. ${canEdit ? "Düzenleyebilirsin." : "Okuyorsun."}`
