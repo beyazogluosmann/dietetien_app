@@ -2,7 +2,6 @@
 
 import { useState } from "react";
 import { dayHasText, emptyPlan, meals, parsePlan, weekDays, type DayId } from "@/diet-plan";
-import { fieldClass } from "@/components/ui";
 
 export function DietEditor({ initialBody }: { initialBody: string }) {
   const legacy = parsePlan(initialBody) ? "" : initialBody.trim();
@@ -32,14 +31,14 @@ export function DietEditor({ initialBody }: { initialBody: string }) {
               key={item.id}
               type="button"
               onClick={() => setDay(item.id)}
-              className={`shrink-0 rounded-full px-3.5 py-2 text-sm ${
+              className={`shrink-0 rounded-full px-3.5 py-2 text-sm font-medium transition ${
                 selected
-                  ? "bg-[#1f4d3a] text-white"
-                  : "bg-[#f6f4ef] text-[#1c1c1a] hover:bg-[#efece4]"
+                  ? "bg-[#1f4d3a] text-white shadow-[0_8px_18px_rgba(31,77,58,0.25)]"
+                  : "border border-[#e6dcc8] bg-white text-[#1c1c1a] hover:border-[#1f4d3a]/30"
               }`}
             >
               {item.short}
-              {filled ? <span className={`ml-1.5 inline-block size-1.5 rounded-full ${selected ? "bg-white" : "bg-[#1f4d3a]"}`} /> : null}
+              {filled ? <span className={`ml-1.5 inline-block size-1.5 rounded-full ${selected ? "bg-[#ffd27a]" : "bg-[#e2a23a]"}`} /> : null}
             </button>
           );
         })}
@@ -48,14 +47,14 @@ export function DietEditor({ initialBody }: { initialBody: string }) {
         <p className="text-xs font-medium tracking-[0.14em] text-[#1f4d3a]">{current.label.toLocaleUpperCase("tr")}</p>
         <div className="mt-4 grid gap-4">
           {meals.map((meal) => (
-            <label key={meal.id} className="flex flex-col gap-2 text-sm">
-              <span className="font-medium">{meal.label}</span>
+            <label key={meal.id} className={`flex flex-col gap-2 rounded-2xl px-4 py-3 text-sm ${meal.tint}`}>
+              <span className={`font-medium ${meal.ink}`}>{meal.label}</span>
               <textarea
                 value={plan.days[day][meal.id]}
                 onChange={(event) => update(meal.id, event.target.value)}
                 rows={3}
                 placeholder="Serbest yaz. Gram ve kalori yok."
-                className={fieldClass}
+                className="w-full resize-y rounded-xl border border-black/5 bg-white/70 px-3.5 py-3 text-sm outline-none transition focus:bg-white focus:ring-4 focus:ring-[#1f4d3a]/10"
               />
             </label>
           ))}

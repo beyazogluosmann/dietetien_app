@@ -29,7 +29,7 @@ export function Screen({
   width?: string;
 }) {
   return (
-    <div className="min-h-dvh bg-[#f3f0e8] text-[#1c1c1a]">
+    <div className="min-h-dvh bg-[#f6f1e6] bg-[radial-gradient(900px_420px_at_0%_-10%,#d9efe0,transparent),radial-gradient(700px_380px_at_100%_0%,#ffe4bf,transparent)] text-[#1c1c1a]">
       <header className="relative z-30 border-b border-[#e6e1d6] bg-white/90 backdrop-blur">
         <div className={`mx-auto flex h-16 items-center justify-between px-6 ${width}`}>
           <div className="flex items-center gap-2.5">

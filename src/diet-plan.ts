@@ -9,10 +9,10 @@ export const weekDays = [
 ] as const;
 
 export const meals = [
-  { id: "morning", label: "Sabah" },
-  { id: "noon", label: "Öğle" },
-  { id: "evening", label: "Akşam" },
-  { id: "snack", label: "Ara öğün" },
+  { id: "morning", label: "Sabah", tint: "bg-[#fff4d8]", ink: "text-[#8a5a10]" },
+  { id: "noon", label: "Öğle", tint: "bg-[#e7f5ea]", ink: "text-[#1f4d3a]" },
+  { id: "evening", label: "Akşam", tint: "bg-[#fde8dc]", ink: "text-[#8a4030]" },
+  { id: "snack", label: "Ara öğün", tint: "bg-[#f3eadf]", ink: "text-[#6d4e32]" },
 ] as const;
 
 export type DayId = (typeof weekDays)[number]["id"];

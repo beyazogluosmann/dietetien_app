@@ -6,6 +6,7 @@ import {
   optionLabel,
   sexOptions,
 } from "@/anamnesis";
+import { meals } from "@/diet-plan";
 import { cardClass, mutedClass } from "@/components/ui";
 
 type History = {
@@ -30,12 +31,24 @@ function initials(name: string) {
   return letters.join("").toLocaleUpperCase("tr") || "?";
 }
 
-function Stat({ label, value, hint }: { label: string; value: string; hint?: string }) {
+function Stat({
+  label,
+  value,
+  hint,
+  tint,
+  ink,
+}: {
+  label: string;
+  value: string;
+  hint?: string;
+  tint: string;
+  ink: string;
+}) {
   return (
-    <div className="rounded-2xl bg-[#f6f4ef] px-4 py-4">
-      <dt className="text-xs text-[#6d6a62]">{label}</dt>
+    <div className={`rounded-2xl px-4 py-4 ${tint}`}>
+      <dt className={`text-xs font-medium ${ink}`}>{label}</dt>
       <dd className="mt-2 text-2xl font-semibold tracking-tight">{value}</dd>
-      {hint ? <p className="mt-1 text-xs font-medium text-[#1f4d3a]">{hint}</p> : null}
+      {hint ? <p className={`mt-1 text-xs font-medium ${ink}`}>{hint}</p> : null}
     </div>
   );
 }
@@ -86,13 +99,15 @@ export function ClientProfile({
       {history ? (
         <>
           <dl className="mt-6 grid grid-cols-2 gap-3 sm:grid-cols-4">
-            <Stat label="Yaş" value={history.age} />
-            <Stat label="Boy" value={`${history.heightCm} cm`} />
-            <Stat label="Kilo" value={`${history.weightKg} kg`} />
+            <Stat label="Yaş" value={history.age} tint={meals[0].tint} ink={meals[0].ink} />
+            <Stat label="Boy" value={`${history.heightCm} cm`} tint={meals[1].tint} ink={meals[1].ink} />
+            <Stat label="Kilo" value={`${history.weightKg} kg`} tint={meals[2].tint} ink={meals[2].ink} />
             <Stat
               label="İndeks"
               value={index !== null ? String(index) : "—"}
               hint={index !== null ? bodyMassLabel(index) : undefined}
+              tint={meals[3].tint}
+              ink={meals[3].ink}
             />
           </dl>
           <dl className="mt-4 grid gap-3 text-sm sm:grid-cols-2">

@@ -14,8 +14,8 @@ function DayBlock({ plan, day }: { plan: DietPlan; day: (typeof weekDays)[number
       </h3>
       <div className="mt-3 grid gap-3">
         {filled.map((meal) => (
-          <div key={meal.id} className="rounded-2xl bg-[#f6f4ef] px-4 py-3">
-            <p className="text-xs text-[#6d6a62]">{meal.label}</p>
+          <div key={meal.id} className={`rounded-2xl px-4 py-3 ${meal.tint}`}>
+            <p className={`text-xs font-medium ${meal.ink}`}>{meal.label}</p>
             <p className="mt-1 whitespace-pre-wrap text-[15px] leading-7">{plan.days[day.id][meal.id]}</p>
           </div>
         ))}
