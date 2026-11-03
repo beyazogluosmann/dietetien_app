@@ -16,7 +16,7 @@ function hashPassword(password) {
 const sql = postgres(connectionString);
 const passwordHash = hashPassword("demo");
 
-await sql`truncate table diet_list, client_account, client, dietitian cascade`;
+await sql`truncate table meal_note, diet_list, client_account, client, dietitian cascade`;
 
 const [selin] = await sql`
   insert into dietitian (name, email, password_hash)

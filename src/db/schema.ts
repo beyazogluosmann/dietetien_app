@@ -1,4 +1,4 @@
-import { pgTable, text, timestamp, uuid } from "drizzle-orm/pg-core";
+import { pgTable, text, timestamp, unique, uuid } from "drizzle-orm/pg-core";
 
 export const dietitian = pgTable("dietitian", {
   id: uuid("id").primaryKey().defaultRandom(),
@@ -76,3 +76,18 @@ export const dietList = pgTable("diet_list", {
     .notNull()
     .defaultNow(),
 });
+
+export const mealNote = pgTable(
+  "meal_note",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    clientId: uuid("client_id")
+      .notNull()
+      .references(() => client.id),
+    day: text("day").notNull(),
+    meal: text("meal").notNull(),
+    body: text("body").notNull().default(""),
+    updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
+  },
+  (table) => [unique().on(table.clientId, table.day, table.meal)],
+);

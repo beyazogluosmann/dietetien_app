@@ -3,7 +3,13 @@
 import { useState } from "react";
 import { dayHasText, emptyPlan, meals, parsePlan, weekDays, type DayId } from "@/diet-plan";
 
-export function DietEditor({ initialBody }: { initialBody: string }) {
+export function DietEditor({
+  initialBody,
+  notes = {},
+}: {
+  initialBody: string;
+  notes?: Record<string, string>;
+}) {
   const legacy = parsePlan(initialBody) ? "" : initialBody.trim();
   const [plan, setPlan] = useState(() => parsePlan(initialBody) ?? emptyPlan());
   const [day, setDay] = useState<DayId>("monday");
@@ -47,16 +53,24 @@ export function DietEditor({ initialBody }: { initialBody: string }) {
         <p className="text-xs font-medium tracking-[0.14em] text-[#1f4d3a]">{current.label.toLocaleUpperCase("tr")}</p>
         <div className="mt-4 grid gap-4">
           {meals.map((meal) => (
-            <label key={meal.id} className={`flex flex-col gap-2 rounded-2xl px-4 py-3 text-sm ${meal.tint}`}>
-              <span className={`font-medium ${meal.ink}`}>{meal.label}</span>
-              <textarea
-                value={plan.days[day][meal.id]}
-                onChange={(event) => update(meal.id, event.target.value)}
-                rows={3}
-                placeholder="Serbest yaz. Gram ve kalori yok."
-                className="w-full resize-y rounded-xl border border-black/5 bg-white/70 px-3.5 py-3 text-sm outline-none transition focus:bg-white focus:ring-4 focus:ring-[#1f4d3a]/10"
-              />
-            </label>
+            <div key={meal.id} className={`flex flex-col gap-2 rounded-2xl px-4 py-3 text-sm ${meal.tint}`}>
+              <label className="flex flex-col gap-2">
+                <span className={`font-medium ${meal.ink}`}>{meal.label}</span>
+                <textarea
+                  value={plan.days[day][meal.id]}
+                  onChange={(event) => update(meal.id, event.target.value)}
+                  rows={3}
+                  placeholder="Serbest yaz. Gram ve kalori yok."
+                  className="w-full resize-y rounded-xl border border-black/5 bg-white/70 px-3.5 py-3 text-sm outline-none transition focus:bg-white focus:ring-4 focus:ring-[#1f4d3a]/10"
+                />
+              </label>
+              {notes[`${day}:${meal.id}`] ? (
+                <p className="text-sm leading-6 text-[#1c1c1a]">
+                  <span className={`font-medium ${meal.ink}`}>Bunu yaptım. </span>
+                  {notes[`${day}:${meal.id}`]}
+                </p>
+              ) : null}
+            </div>
           ))}
         </div>
       </div>

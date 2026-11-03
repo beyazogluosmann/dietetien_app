@@ -14,7 +14,7 @@ import { db } from "@/db";
 import { ClientProfile } from "@/components/client-profile";
 import { DietEditor } from "@/components/diet-editor";
 import { DietView } from "@/components/diet-view";
-import { anamnesis, client, clientAccount, clientRequest, dietList, dietitian } from "@/db/schema";
+import { anamnesis, client, clientAccount, clientRequest, dietList, dietitian, mealNote } from "@/db/schema";
 import { fullName } from "@/person";
 
 async function saveList(formData: FormData) {
@@ -130,6 +130,12 @@ async function DietListPage({ params }: { params: Promise<{ id: string }> }) {
     : [];
 
   const canEdit = !list || list.authorId === session.id;
+  const notes = Object.fromEntries(
+    (await db.select().from(mealNote).where(eq(mealNote.clientId, id))).map((note) => [
+      `${note.day}:${note.meal}`,
+      note.body,
+    ]),
+  );
 
   return (
     <Screen
@@ -174,7 +180,7 @@ async function DietListPage({ params }: { params: Promise<{ id: string }> }) {
           className="overflow-hidden rounded-2xl border border-[#e6e1d6] bg-white shadow-[0_16px_40px_rgba(31,77,58,0.06)]"
         >
           <input type="hidden" name="clientId" value={card.id} />
-          <DietEditor initialBody={list?.body ?? ""} />
+          <DietEditor initialBody={list?.body ?? ""} notes={notes} />
           <div className="flex flex-wrap justify-end gap-2 border-t border-[#eee] bg-[#fafaf8] px-4 py-3">
             <button type="submit" name="intent" value="draft" className={buttonClass}>
               Taslağı kaydet
@@ -185,7 +191,7 @@ async function DietListPage({ params }: { params: Promise<{ id: string }> }) {
           </div>
         </form>
       ) : (
-        <DietView body={list?.body ?? ""} />
+        <DietView body={list?.body ?? ""} notes={notes} />
       )}
     </Screen>
   );

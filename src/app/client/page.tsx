@@ -6,7 +6,7 @@ import { ClientProfile } from "@/components/client-profile";
 import { DietView } from "@/components/diet-view";
 import { AccountMenu, cardClass, fieldClass, mutedClass, primaryButtonClass, Screen } from "@/components/ui";
 import { db } from "@/db";
-import { anamnesis, client, clientRequest, dietList, dietitian } from "@/db/schema";
+import { anamnesis, client, clientRequest, dietList, dietitian, mealNote } from "@/db/schema";
 import { fullName } from "@/person";
 
 async function requestAgain(formData: FormData) {
@@ -90,6 +90,14 @@ async function ClientRoom() {
       : [];
 
   const visibleList = list?.status === "sent" ? list : null;
+  const notes = visibleList
+    ? Object.fromEntries(
+        (await db.select().from(mealNote).where(eq(mealNote.clientId, person.id))).map((note) => [
+          `${note.day}:${note.meal}`,
+          note.body,
+        ]),
+      )
+    : {};
 
   return (
     <Screen
@@ -103,7 +111,7 @@ async function ClientRoom() {
         DİYET LİSTESİ
       </h2>
       {visibleList ? (
-        <DietView body={visibleList.body} authorName={visibleList.authorName} />
+        <DietView body={visibleList.body} authorName={visibleList.authorName} notes={notes} editable />
       ) : request?.status === "rejected" ? (
         <div className={`${cardClass} px-8 py-8`}>
           <p className={mutedClass}>
