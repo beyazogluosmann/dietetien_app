@@ -21,7 +21,7 @@ export function ClientSearch({ query }: { query: string }) {
     <div className="mt-4 flex flex-wrap items-center gap-2">
       <input
         value={value}
-        placeholder="Ada göre ara"
+        placeholder="Ad veya soyada göre ara"
         className={`${fieldClass} max-w-xs`}
         onChange={(event) => search(event.target.value)}
       />

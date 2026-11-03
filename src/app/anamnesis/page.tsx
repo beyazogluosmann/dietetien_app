@@ -5,6 +5,7 @@ import { getSession } from "@/auth/session";
 import { AccountMenu, cardClass, mutedClass, Screen } from "@/components/ui";
 import { db } from "@/db";
 import { anamnesis, client } from "@/db/schema";
+import { fullName } from "@/person";
 import { AnamnesisForm } from "./form";
 
 async function AnamnesisRoom() {
@@ -29,7 +30,7 @@ async function AnamnesisRoom() {
   return (
     <Screen
       width="max-w-md"
-      actions={<AccountMenu name={person.name} />}
+      actions={<AccountMenu name={fullName(person.name, person.surname)} />}
     >
       <div className={`${cardClass} px-8 py-10`}>
         <p className="text-xs font-medium tracking-[0.14em] text-[#1f4d3a]">KLİNİK</p>

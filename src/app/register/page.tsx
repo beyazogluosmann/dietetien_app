@@ -7,21 +7,29 @@ import { setSession } from "@/auth/session";
 import { cardClass, fieldClass, linkClass, mutedClass, primaryButtonClass, Screen } from "@/components/ui";
 import { db } from "@/db";
 import { client, clientAccount, clientRequest, dietitian } from "@/db/schema";
+import { parseEmail, parsePersonName } from "@/person";
 
 async function register(formData: FormData) {
   "use server";
 
-  const name = String(formData.get("name") ?? "").trim();
+  const name = parsePersonName(String(formData.get("name") ?? ""));
+  const surname = parsePersonName(String(formData.get("surname") ?? ""));
   const phone = String(formData.get("phone") ?? "").trim();
-  const email = String(formData.get("email") ?? "")
-    .trim()
-    .toLowerCase();
+  const email = parseEmail(String(formData.get("email") ?? ""));
   const password = String(formData.get("password") ?? "");
   const dietitianId = String(formData.get("dietitianId") ?? "");
   const message = String(formData.get("message") ?? "").trim();
 
-  if (!name || !phone || !email || !password || !dietitianId) {
+  if (!phone || !password || !dietitianId) {
     redirect("/register?error=missing");
+  }
+
+  if (!name || !surname) {
+    redirect("/register?error=name");
+  }
+
+  if (!email) {
+    redirect("/register?error=email-invalid");
   }
 
   const [chosen] = await db.select().from(dietitian).where(eq(dietitian.id, dietitianId));
@@ -45,6 +53,7 @@ async function register(formData: FormData) {
     .insert(client)
     .values({
       name,
+      surname,
       phone,
       note: message,
       dietitianId: chosen.id,
@@ -70,7 +79,13 @@ async function register(formData: FormData) {
 
 function registerMessage(error: string | undefined) {
   if (error === "missing") {
-    return "Ad, telefon, e-posta, şifre ve diyetisyen gerekli.";
+    return "Ad, soyad, telefon, e-posta, şifre ve diyetisyen gerekli.";
+  }
+  if (error === "name") {
+    return "Ad ve soyad en az 2 harf olmalı. Rakam ve işaret kullanma.";
+  }
+  if (error === "email-invalid") {
+    return "Geçerli bir e-posta yaz.";
   }
   if (error === "email") {
     return "Bu e-posta kullanılıyor.";
@@ -101,7 +116,11 @@ async function RegisterForm({
         <form action={register} className="mt-8 flex flex-col gap-4">
           <label className="flex flex-col gap-1 text-sm">
             Ad
-            <input name="name" className={fieldClass} />
+            <input name="name" autoComplete="given-name" className={fieldClass} />
+          </label>
+          <label className="flex flex-col gap-1 text-sm">
+            Soyad
+            <input name="surname" autoComplete="family-name" className={fieldClass} />
           </label>
           <label className="flex flex-col gap-1 text-sm">
             Telefon

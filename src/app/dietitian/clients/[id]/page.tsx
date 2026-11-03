@@ -15,6 +15,7 @@ import { ClientProfile } from "@/components/client-profile";
 import { DietEditor } from "@/components/diet-editor";
 import { DietView } from "@/components/diet-view";
 import { anamnesis, client, clientAccount, clientRequest, dietList, dietitian } from "@/db/schema";
+import { fullName } from "@/person";
 
 async function saveList(formData: FormData) {
   "use server";
@@ -140,7 +141,7 @@ async function DietListPage({ params }: { params: Promise<{ id: string }> }) {
       <BackLink href="/dietitian">Danışanlar</BackLink>
       <div className="mt-6">
         <ClientProfile
-          name={card.name}
+          name={fullName(card.name, card.surname)}
           phone={card.phone}
           email={account?.email ?? "Hesabı yok"}
           history={history ?? null}

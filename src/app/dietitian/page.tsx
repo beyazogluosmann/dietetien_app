@@ -1,12 +1,13 @@
 import { Suspense } from "react";
 import Link from "next/link";
 import { redirect } from "next/navigation";
-import { and, eq, ilike, isNull, ne, or } from "drizzle-orm";
+import { and, eq, ilike, isNull, ne, or, sql } from "drizzle-orm";
 import { getSession } from "@/auth/session";
 import { ClientSearch } from "@/components/client-search";
 import { AccountMenu, linkClass, ListStatus, Screen } from "@/components/ui";
 import { db } from "@/db";
 import { client, clientAccount, clientRequest, dietList, dietitian } from "@/db/schema";
+import { fullName } from "@/person";
 
 async function DietitianRoom({
   searchParams,
@@ -34,6 +35,7 @@ async function DietitianRoom({
       id: clientRequest.id,
       clientId: client.id,
       clientName: client.name,
+      clientSurname: client.surname,
       message: clientRequest.message,
     })
     .from(clientRequest)
@@ -45,6 +47,7 @@ async function DietitianRoom({
     .select({
       id: client.id,
       name: client.name,
+      surname: client.surname,
       dietitianName: dietitian.name,
       status: dietList.status,
       accountId: clientAccount.id,
@@ -56,10 +59,13 @@ async function DietitianRoom({
     .leftJoin(clientRequest, eq(clientRequest.clientId, client.id));
   const visible = or(isNull(clientRequest.id), ne(clientRequest.status, "rejected"));
   const mine = and(eq(client.dietitianId, person.id), visible);
+  const named = sql`${client.name} || ' ' || ${client.surname}`;
   const rows = await (query
-    ? clients.where(and(mine, ilike(client.name, pattern)))
+    ? clients.where(
+        and(mine, or(ilike(client.name, pattern), ilike(client.surname, pattern), ilike(named, pattern))),
+      )
     : clients.where(mine)
-  ).orderBy(client.name);
+  ).orderBy(client.name, client.surname);
 
   return (
     <Screen
@@ -80,7 +86,7 @@ async function DietitianRoom({
             {requests.map((request) => (
               <li key={request.id}>
                 <Link href={`/dietitian/clients/${request.clientId}`} className={linkClass}>
-                  {request.clientName}
+                  {fullName(request.clientName, request.clientSurname)}
                 </Link>
                 <p className="mt-1 text-sm text-[#6b6b66]">
                   {request.message || "Liste istiyor."}
@@ -112,7 +118,7 @@ async function DietitianRoom({
               <tr key={row.id} className="border-b border-[#f0f0ec] last:border-0 hover:bg-[#fcfbf8]">
                 <td className="px-5 py-4">
                   <Link href={`/dietitian/clients/${row.id}`} className={linkClass}>
-                    {row.name}
+                    {fullName(row.name, row.surname)}
                   </Link>
                 </td>
                 <td className="px-5 py-4 text-[#6d6a62]">{row.dietitianName}</td>

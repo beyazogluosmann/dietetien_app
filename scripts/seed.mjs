@@ -31,14 +31,14 @@ const [emre] = await sql`
 `;
 
 const [elifClient] = await sql`
-  insert into client (name, phone, note, dietitian_id)
-  values ('Elif Yılmaz', '532 000 00 11', 'Laktoz hassasiyeti', ${selin.id})
+  insert into client (name, surname, phone, note, dietitian_id)
+  values ('Elif', 'Yılmaz', '532 000 00 11', 'Laktoz hassasiyeti', ${selin.id})
   returning id
 `;
 
 const [kerem] = await sql`
-  insert into client (name, phone, note, dietitian_id)
-  values ('Kerem Aydın', '532 000 00 22', 'Akşamları dışarıda yiyor', ${emre.id})
+  insert into client (name, surname, phone, note, dietitian_id)
+  values ('Kerem', 'Aydın', '532 000 00 22', 'Akşamları dışarıda yiyor', ${emre.id})
   returning id
 `;
 

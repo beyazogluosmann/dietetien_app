@@ -10,6 +10,7 @@ export const dietitian = pgTable("dietitian", {
 export const client = pgTable("client", {
   id: uuid("id").primaryKey().defaultRandom(),
   name: text("name").notNull(),
+  surname: text("surname").notNull().default(""),
   phone: text("phone").notNull(),
   note: text("note").notNull().default(""),
   dietitianId: uuid("dietitian_id")

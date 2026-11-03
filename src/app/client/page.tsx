@@ -7,6 +7,7 @@ import { DietView } from "@/components/diet-view";
 import { AccountMenu, cardClass, fieldClass, mutedClass, primaryButtonClass, Screen } from "@/components/ui";
 import { db } from "@/db";
 import { anamnesis, client, clientRequest, dietList, dietitian } from "@/db/schema";
+import { fullName } from "@/person";
 
 async function requestAgain(formData: FormData) {
   "use server";
@@ -94,10 +95,10 @@ async function ClientRoom() {
     <Screen
       width="max-w-3xl"
       actions={
-        <AccountMenu name={person.name} />
+        <AccountMenu name={fullName(person.name, person.surname)} />
       }
     >
-      <ClientProfile name={person.name} phone={person.phone} history={history} />
+      <ClientProfile name={fullName(person.name, person.surname)} phone={person.phone} history={history} />
       <h2 className="mt-10 mb-4 text-xs font-medium tracking-[0.14em] text-[#1f4d3a]">
         DİYET LİSTESİ
       </h2>

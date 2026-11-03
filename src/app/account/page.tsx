@@ -6,6 +6,7 @@ import { ChangePasswordForm } from "@/components/change-password";
 import { AccountMenu, BackLink, cardClass, mutedClass, Screen } from "@/components/ui";
 import { db } from "@/db";
 import { client, dietitian } from "@/db/schema";
+import { fullName } from "@/person";
 
 async function AccountRoom({
   searchParams,
@@ -33,7 +34,9 @@ async function AccountRoom({
     <Screen
       width="max-w-md"
       actions={
-        <AccountMenu name={person.name} />
+        <AccountMenu
+          name={"surname" in person ? fullName(person.name, person.surname) : person.name}
+        />
       }
     >
       <BackLink href={home}>{session.role === "dietitian" ? "Danışanlar" : "Diyet listesi"}</BackLink>
