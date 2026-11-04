@@ -28,7 +28,7 @@ export function DietEditor({
   return (
     <div>
       <input type="hidden" name="body" value={JSON.stringify(plan)} />
-      <div className="flex gap-2 overflow-x-auto px-5 pt-5 pb-1">
+      <div className="flex gap-2 overflow-x-auto px-5 pt-5">
         {weekDays.map((item) => {
           const selected = item.id === day;
           const filled = dayHasText(plan, item.id);
@@ -39,29 +39,38 @@ export function DietEditor({
               onClick={() => setDay(item.id)}
               className={`shrink-0 rounded-full px-3.5 py-2 text-sm font-medium transition ${
                 selected
-                  ? "bg-[#1f4d3a] text-white shadow-[0_8px_18px_rgba(31,77,58,0.25)]"
-                  : "border border-[#e6dcc8] bg-white text-[#1c1c1a] hover:border-[#1f4d3a]/30"
+                  ? "bg-[#1f4d3a] text-white"
+                  : "bg-[#f4efe4] text-[#1c1c1a] hover:bg-[#ebe4d4]"
               }`}
             >
               {item.short}
-              {filled ? <span className={`ml-1.5 inline-block size-1.5 rounded-full ${selected ? "bg-[#ffd27a]" : "bg-[#e2a23a]"}`} /> : null}
+              {filled ? (
+                <span
+                  className={`ml-1.5 inline-block size-1.5 rounded-full align-middle ${selected ? "bg-white/80" : "bg-[#1f4d3a]"}`}
+                />
+              ) : null}
             </button>
           );
         })}
       </div>
-      <div className="px-6 pt-5 pb-2">
-        <p className="text-xs font-medium tracking-[0.14em] text-[#1f4d3a]">{current.label.toLocaleUpperCase("tr")}</p>
-        <div className="mt-4 grid gap-4">
+      <div className="px-6 pt-5 pb-6">
+        <p className="text-sm font-medium text-[#1f4d3a]">{current.label}</p>
+        <div className="mt-4 grid gap-3">
           {meals.map((meal) => (
-            <div key={meal.id} className={`flex flex-col gap-2 rounded-2xl px-4 py-3 text-sm ${meal.tint}`}>
+            <div
+              key={meal.id}
+              className={`flex flex-col gap-2 rounded-xl border border-[#e6e1d6] border-l-4 px-4 py-4 text-sm ${meal.tint}`}
+            >
               <label className="flex flex-col gap-2">
-                <span className={`font-medium ${meal.ink}`}>{meal.label}</span>
+                <span className={`text-xs font-medium tracking-[0.08em] ${meal.ink}`}>
+                  {meal.label.toLocaleUpperCase("tr")}
+                </span>
                 <textarea
                   value={plan.days[day][meal.id]}
                   onChange={(event) => update(meal.id, event.target.value)}
                   rows={3}
                   placeholder="Serbest yaz. Gram ve kalori yok."
-                  className="w-full resize-y rounded-xl border border-black/5 bg-white/70 px-3.5 py-3 text-sm outline-none transition focus:bg-white focus:ring-4 focus:ring-[#1f4d3a]/10"
+                  className="w-full resize-y rounded-lg border border-[#e6e1d6] bg-white px-3.5 py-3 text-sm outline-none transition focus:border-[#1f4d3a] focus:ring-4 focus:ring-[#1f4d3a]/10"
                 />
               </label>
               {notes[`${day}:${meal.id}`] ? (

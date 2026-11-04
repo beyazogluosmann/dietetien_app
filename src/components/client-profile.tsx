@@ -45,10 +45,10 @@ function Stat({
   ink: string;
 }) {
   return (
-    <div className={`rounded-2xl px-4 py-4 ${tint}`}>
+    <div className={`rounded-xl border border-[#e6e1d6] border-l-4 px-4 py-4 ${tint}`}>
       <dt className={`text-xs font-medium ${ink}`}>{label}</dt>
       <dd className="mt-2 text-2xl font-semibold tracking-tight">{value}</dd>
-      {hint ? <p className={`mt-1 text-xs font-medium ${ink}`}>{hint}</p> : null}
+      {hint ? <p className={`mt-1 text-xs ${ink}`}>{hint}</p> : null}
     </div>
   );
 }
