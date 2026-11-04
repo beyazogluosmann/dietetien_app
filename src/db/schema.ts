@@ -65,7 +65,6 @@ export const dietList = pgTable("diet_list", {
   id: uuid("id").primaryKey().defaultRandom(),
   clientId: uuid("client_id")
     .notNull()
-    .unique()
     .references(() => client.id),
   authorId: uuid("author_id")
     .notNull()
@@ -84,10 +83,13 @@ export const mealNote = pgTable(
     clientId: uuid("client_id")
       .notNull()
       .references(() => client.id),
+    listId: uuid("list_id")
+      .notNull()
+      .references(() => dietList.id),
     day: text("day").notNull(),
     meal: text("meal").notNull(),
     body: text("body").notNull().default(""),
     updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
   },
-  (table) => [unique().on(table.clientId, table.day, table.meal)],
+  (table) => [unique().on(table.listId, table.day, table.meal)],
 );

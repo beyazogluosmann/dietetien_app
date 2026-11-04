@@ -1,6 +1,6 @@
 "use server";
 
-import { and, eq } from "drizzle-orm";
+import { and, desc, eq } from "drizzle-orm";
 import { redirect } from "next/navigation";
 import { getSession } from "@/auth/session";
 import { db } from "@/db";
@@ -24,12 +24,16 @@ export async function saveMealNote(formData: FormData) {
     redirect("/client");
   }
 
-  const [list] = await db.select().from(dietList).where(eq(dietList.clientId, session.id));
-  if (!list || list.status !== "sent") {
+  const [list] = await db
+    .select()
+    .from(dietList)
+    .where(and(eq(dietList.clientId, session.id), eq(dietList.status, "sent")))
+    .orderBy(desc(dietList.updatedAt));
+  if (!list) {
     redirect("/client");
   }
 
-  const mine = and(eq(mealNote.clientId, session.id), eq(mealNote.day, day), eq(mealNote.meal, meal));
+  const mine = and(eq(mealNote.listId, list.id), eq(mealNote.day, day), eq(mealNote.meal, meal));
   if (!body) {
     await db.delete(mealNote).where(mine);
     redirect("/client");
@@ -37,9 +41,16 @@ export async function saveMealNote(formData: FormData) {
 
   await db
     .insert(mealNote)
-    .values({ clientId: session.id, day, meal, body, updatedAt: new Date() })
+    .values({
+      clientId: session.id,
+      listId: list.id,
+      day,
+      meal,
+      body,
+      updatedAt: new Date(),
+    })
     .onConflictDoUpdate({
-      target: [mealNote.clientId, mealNote.day, mealNote.meal],
+      target: [mealNote.listId, mealNote.day, mealNote.meal],
       set: { body, updatedAt: new Date() },
     });
 

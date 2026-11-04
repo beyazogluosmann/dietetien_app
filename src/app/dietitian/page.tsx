@@ -1,7 +1,7 @@
 import { Suspense } from "react";
 import Link from "next/link";
 import { redirect } from "next/navigation";
-import { and, eq, ilike, isNull, ne, or, sql } from "drizzle-orm";
+import { and, desc, eq, ilike, isNull, ne, or, sql } from "drizzle-orm";
 import { getSession } from "@/auth/session";
 import { ClientSearch } from "@/components/client-search";
 import { AccountMenu, linkClass, ListStatus, Screen } from "@/components/ui";
@@ -43,18 +43,26 @@ async function DietitianRoom({
     .where(and(eq(clientRequest.dietitianId, person.id), eq(clientRequest.status, "pending")));
 
   const pattern = `%${query.replace(/[%_\\]/g, "\\$&")}%`;
+  const latestList = db
+    .selectDistinctOn([dietList.clientId], {
+      clientId: dietList.clientId,
+      status: dietList.status,
+    })
+    .from(dietList)
+    .orderBy(dietList.clientId, desc(dietList.updatedAt))
+    .as("latest_list");
   const clients = db
     .select({
       id: client.id,
       name: client.name,
       surname: client.surname,
       dietitianName: dietitian.name,
-      status: dietList.status,
+      status: latestList.status,
       accountId: clientAccount.id,
     })
     .from(client)
     .innerJoin(dietitian, eq(client.dietitianId, dietitian.id))
-    .leftJoin(dietList, eq(dietList.clientId, client.id))
+    .leftJoin(latestList, eq(latestList.clientId, client.id))
     .leftJoin(clientAccount, eq(clientAccount.clientId, client.id))
     .leftJoin(clientRequest, eq(clientRequest.clientId, client.id));
   const visible = or(isNull(clientRequest.id), ne(clientRequest.status, "rejected"));

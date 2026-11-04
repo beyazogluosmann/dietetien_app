@@ -1,6 +1,6 @@
 import { Suspense } from "react";
 import { redirect } from "next/navigation";
-import { and, asc, eq } from "drizzle-orm";
+import { and, asc, desc, eq } from "drizzle-orm";
 import { getSession } from "@/auth/session";
 import { ClientProfile } from "@/components/client-profile";
 import { DietView } from "@/components/diet-view";
@@ -66,13 +66,15 @@ async function ClientRoom() {
 
   const [list] = await db
     .select({
+      id: dietList.id,
       body: dietList.body,
       status: dietList.status,
       authorName: dietitian.name,
     })
     .from(dietList)
     .leftJoin(dietitian, eq(dietList.authorId, dietitian.id))
-    .where(eq(dietList.clientId, person.id));
+    .where(and(eq(dietList.clientId, person.id), eq(dietList.status, "sent")))
+    .orderBy(desc(dietList.updatedAt));
 
   const [chosen] = await db
     .select()
@@ -92,7 +94,7 @@ async function ClientRoom() {
   const visibleList = list?.status === "sent" ? list : null;
   const notes = visibleList
     ? Object.fromEntries(
-        (await db.select().from(mealNote).where(eq(mealNote.clientId, person.id))).map((note) => [
+        (await db.select().from(mealNote).where(eq(mealNote.listId, visibleList.id))).map((note) => [
           `${note.day}:${note.meal}`,
           note.body,
         ]),

@@ -1,6 +1,6 @@
 import { Suspense } from "react";
 import { redirect } from "next/navigation";
-import { and, eq } from "drizzle-orm";
+import { and, desc, eq } from "drizzle-orm";
 import { getSession } from "@/auth/session";
 import {
   AccountMenu,
@@ -15,6 +15,7 @@ import { ClientProfile } from "@/components/client-profile";
 import { DietEditor } from "@/components/diet-editor";
 import { DietView } from "@/components/diet-view";
 import { anamnesis, client, clientAccount, clientRequest, dietList, dietitian, mealNote } from "@/db/schema";
+import { emptyPlan } from "@/diet-plan";
 import { fullName } from "@/person";
 
 async function saveList(formData: FormData) {
@@ -41,7 +42,19 @@ async function saveList(formData: FormData) {
   const [list] = await db
     .select()
     .from(dietList)
-    .where(eq(dietList.clientId, clientId));
+    .where(eq(dietList.clientId, clientId))
+    .orderBy(desc(dietList.updatedAt));
+
+  if (intent === "new") {
+    await db.insert(dietList).values({
+      clientId,
+      authorId: session.id,
+      body: JSON.stringify(emptyPlan()),
+      status: "draft",
+      updatedAt: new Date(),
+    });
+    redirect(`/dietitian/clients/${clientId}`);
+  }
 
   if (!list) {
     await db.insert(dietList).values({
@@ -113,7 +126,11 @@ async function DietListPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
   const [card] = await db.select().from(client).where(eq(client.id, id));
   const [account] = await db.select().from(clientAccount).where(eq(clientAccount.clientId, id));
-  const [list] = await db.select().from(dietList).where(eq(dietList.clientId, id));
+  const [list] = await db
+    .select()
+    .from(dietList)
+    .where(eq(dietList.clientId, id))
+    .orderBy(desc(dietList.updatedAt));
   const [request] = await db
     .select()
     .from(clientRequest)
@@ -130,12 +147,14 @@ async function DietListPage({ params }: { params: Promise<{ id: string }> }) {
     : [];
 
   const canEdit = !list || list.authorId === session.id;
-  const notes = Object.fromEntries(
-    (await db.select().from(mealNote).where(eq(mealNote.clientId, id))).map((note) => [
-      `${note.day}:${note.meal}`,
-      note.body,
-    ]),
-  );
+  const notes = list
+    ? Object.fromEntries(
+        (await db.select().from(mealNote).where(eq(mealNote.listId, list.id))).map((note) => [
+          `${note.day}:${note.meal}`,
+          note.body,
+        ]),
+      )
+    : {};
 
   return (
     <Screen
@@ -182,6 +201,9 @@ async function DietListPage({ params }: { params: Promise<{ id: string }> }) {
           <input type="hidden" name="clientId" value={card.id} />
           <DietEditor initialBody={list?.body ?? ""} notes={notes} />
           <div className="flex flex-wrap justify-end gap-2 border-t border-[#eee] bg-[#fafaf8] px-4 py-3">
+            <button type="submit" name="intent" value="new" className={buttonClass}>
+              Yeni hafta
+            </button>
             <button type="submit" name="intent" value="draft" className={buttonClass}>
               Taslağı kaydet
             </button>
