@@ -4,6 +4,7 @@ import { redirect } from "next/navigation";
 import { asc, eq } from "drizzle-orm";
 import { hashPassword } from "@/auth/password";
 import { setSession } from "@/auth/session";
+import { RedirectIfSignedIn } from "@/components/redirect-if-signed-in";
 import { cardClass, fieldClass, linkClass, mutedClass, primaryButtonClass, Screen } from "@/components/ui";
 import { db } from "@/db";
 import { client, clientAccount, clientRequest, dietitian } from "@/db/schema";
@@ -180,6 +181,7 @@ export default function RegisterPage({
 }) {
   return (
     <Suspense>
+      <RedirectIfSignedIn />
       <RegisterForm searchParams={searchParams} />
     </Suspense>
   );

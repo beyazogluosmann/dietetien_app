@@ -3,6 +3,7 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import { signIn } from "@/auth/sign-in";
 import { setSession } from "@/auth/session";
+import { RedirectIfSignedIn } from "@/components/redirect-if-signed-in";
 import { cardClass, fieldClass, linkClass, mutedClass, primaryButtonClass, Screen } from "@/components/ui";
 
 async function login(formData: FormData) {
@@ -49,6 +50,9 @@ export default function Home({
 }) {
   return (
     <Screen width="max-w-md">
+      <Suspense>
+        <RedirectIfSignedIn />
+      </Suspense>
       <div className={`${cardClass} px-8 py-10`}>
         <p className="text-xs font-medium tracking-[0.14em] text-[#1f4d3a]">KLİNİK</p>
         <h1 className="mt-3 text-4xl font-semibold tracking-tight">Hoş geldin</h1>
