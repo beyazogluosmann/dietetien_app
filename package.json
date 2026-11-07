@@ -6,7 +6,8 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "test": "node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --test src/person.test.ts src/auth/password.test.ts src/anamnesis.test.ts"
   },
   "dependencies": {
     "drizzle-orm": "^0.45.4",
