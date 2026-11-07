@@ -1,4 +1,4 @@
-import { pgTable, text, timestamp, unique, uuid } from "drizzle-orm/pg-core";
+import { integer, pgTable, text, timestamp, unique, uuid } from "drizzle-orm/pg-core";
 
 export const dietitian = pgTable("dietitian", {
   id: uuid("id").primaryKey().defaultRandom(),
@@ -93,3 +93,9 @@ export const mealNote = pgTable(
   },
   (table) => [unique().on(table.listId, table.day, table.meal)],
 );
+
+export const loginAttempt = pgTable("login_attempt", {
+  email: text("email").primaryKey(),
+  failures: integer("failures").notNull().default(0),
+  lockedUntil: timestamp("locked_until", { withTimezone: true }),
+});

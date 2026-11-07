@@ -50,6 +50,7 @@ export async function setSession(session: Session) {
   const jar = await cookies();
   jar.set("session", `${payload}.${signature(payload)}`, {
     httpOnly: true,
+    secure: process.env.NODE_ENV === "production",
     sameSite: "lax",
     path: "/",
     maxAge: 60 * 60 * 24 * 7,

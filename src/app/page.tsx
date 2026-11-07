@@ -13,6 +13,10 @@ async function login(formData: FormData) {
   const password = String(formData.get("password") ?? "");
   const result = await signIn(email, password);
 
+  if (result === "locked") {
+    redirect("/?error=locked");
+  }
+
   if (!result) {
     redirect("/?error=1");
   }
@@ -32,14 +36,18 @@ async function LoginError({
   searchParams: Promise<{ error?: string }>;
 }) {
   const params = await searchParams;
-  if (params.error !== "1") {
+  const message =
+    params.error === "locked"
+      ? "Çok fazla hatalı deneme yapıldı. 15 dakika sonra tekrar dene."
+      : params.error === "1"
+        ? "E-posta veya şifre yanlış."
+        : null;
+  if (!message) {
     return null;
   }
 
   return (
-    <p className="rounded-lg bg-[#fde8e4] px-3 py-2 text-sm text-[#8a2e22]">
-      E-posta veya şifre yanlış.
-    </p>
+    <p className="rounded-lg bg-[#fde8e4] px-3 py-2 text-sm text-[#8a2e22]">{message}</p>
   );
 }
 
