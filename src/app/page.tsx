@@ -35,7 +35,7 @@ async function login(formData: FormData) {
 
 export default function Home() {
   return (
-    <div className="grid min-h-dvh lg:grid-cols-[minmax(0,1.05fr)_minmax(0,0.95fr)]">
+    <div className="grid min-h-dvh bg-[#1f4d3a] lg:grid-cols-[minmax(0,1.05fr)_minmax(0,0.95fr)] lg:bg-[#f6f1e6]">
       <Suspense>
         <RedirectIfSignedIn />
       </Suspense>
@@ -63,20 +63,27 @@ export default function Home() {
           </ul>
         </div>
       </aside>
-      <main className="flex items-start justify-center bg-[#f6f1e6] px-4 py-8 sm:items-center sm:px-6 sm:py-12">
-        <div className="w-full max-w-md">
-          <div className="mb-6 flex items-center justify-between lg:hidden">
+      <main className="relative flex min-h-dvh items-start justify-center overflow-hidden bg-[#1f4d3a] px-4 py-8 sm:px-6 lg:min-h-0 lg:items-center lg:overflow-visible lg:bg-[#f6f1e6] lg:px-6 lg:py-12">
+        <div className="pointer-events-none absolute inset-0 lg:hidden" aria-hidden="true">
+          <div className="absolute -top-24 -left-16 size-72 rounded-full bg-[#2f6b50]" />
+          <div className="absolute top-28 -right-20 size-64 rounded-full bg-[#173c2d]" />
+          <div className="absolute -bottom-24 -left-12 size-72 rounded-full bg-[#173c2d]" />
+          <LemonMark className="absolute top-7 right-5 size-20 -rotate-12" />
+          <LeafMark className="absolute top-24 left-2 size-16 rotate-6" />
+          <AppleMark className="absolute top-40 right-8 size-14" />
+          <CarrotMark className="absolute right-3 bottom-10 size-16 -rotate-12" />
+        </div>
+        <div className="relative z-10 w-full max-w-md">
+          <div className="mb-6 text-[#f6f1e6] lg:hidden">
             <div className="flex items-center gap-2.5">
-              <span className="grid size-8 place-items-center rounded-xl bg-[#1f4d3a] text-xs font-medium text-white">
+              <span className="grid size-9 place-items-center rounded-2xl bg-[#f6f1e6] text-sm font-semibold text-[#1f4d3a]">
                 K
               </span>
-              <span className="text-[15px] font-semibold tracking-tight">Klinik</span>
+              <span className="text-base font-semibold tracking-tight">Klinik</span>
             </div>
-            <div className="flex items-center">
-              <AppleMark className="size-9" />
-              <LemonMark className="size-9" />
-              <CarrotMark className="size-9" />
-            </div>
+            <p className="mt-5 max-w-[15rem] text-[1.65rem] leading-[1.15] font-semibold tracking-tight">
+              Danışanın, listesi ve notu bir arada.
+            </p>
           </div>
           <div className={`${cardClass} px-5 py-7 sm:px-8 sm:py-10`}>
             <p className="text-xs font-medium tracking-[0.14em] text-[#1f4d3a]">GİRİŞ</p>
