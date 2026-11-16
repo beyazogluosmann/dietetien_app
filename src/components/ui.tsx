@@ -31,8 +31,8 @@ export function Screen({
   return (
     <div className="min-h-dvh bg-[#f6f1e6] bg-[radial-gradient(900px_420px_at_0%_-10%,#d9efe0,transparent),radial-gradient(700px_380px_at_100%_0%,#ffe4bf,transparent)] text-[#1c1c1a]">
       <header className="relative z-30 border-b border-[#e6e1d6] bg-white/90 backdrop-blur">
-        <div className={`mx-auto flex h-16 items-center justify-between px-6 ${width}`}>
-          <div className="flex items-center gap-2.5">
+        <div className={`mx-auto flex h-16 items-center justify-between gap-3 px-4 sm:px-6 ${width}`}>
+          <div className="flex shrink-0 items-center gap-2.5">
             <span className="grid size-8 place-items-center rounded-xl bg-[#1f4d3a] text-xs font-medium text-white">
               K
             </span>
@@ -41,7 +41,7 @@ export function Screen({
           {actions}
         </div>
       </header>
-      <main className={`mx-auto w-full px-6 py-12 ${width}`}>{children}</main>
+      <main className={`mx-auto w-full px-4 py-8 sm:px-6 sm:py-12 ${width}`}>{children}</main>
     </div>
   );
 }
@@ -49,9 +49,9 @@ export function Screen({
 export function AccountMenu({ name }: { name: string }) {
   return (
     <details className="relative">
-      <summary className="flex cursor-pointer list-none items-center gap-2 rounded-full border border-[#e6e1d6] bg-[#fcfbf8] px-3 py-1.5 text-sm text-[#1c1c1a] hover:bg-white [&::-webkit-details-marker]:hidden">
-        {name}
-        <span aria-hidden="true" className="text-[10px]">
+      <summary className="flex max-w-[9rem] cursor-pointer list-none items-center gap-2 rounded-full border border-[#e6e1d6] bg-[#fcfbf8] px-3 py-1.5 text-sm text-[#1c1c1a] hover:bg-white sm:max-w-none [&::-webkit-details-marker]:hidden">
+        <span className="truncate">{name}</span>
+        <span aria-hidden="true" className="shrink-0 text-[10px]">
           ▾
         </span>
       </summary>

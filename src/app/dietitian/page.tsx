@@ -83,7 +83,7 @@ async function DietitianRoom({
     >
       <div className="mb-6">
         <p className="text-xs font-medium tracking-[0.14em] text-[#1f4d3a]">PANEL</p>
-        <h1 className="mt-2 text-4xl font-semibold tracking-tight">Danışanlar</h1>
+        <h1 className="mt-2 text-3xl font-semibold tracking-tight sm:text-4xl">Danışanlar</h1>
         <p className="mt-2 text-sm text-[#6d6a62]">{rows.length} kayıt</p>
         <ClientSearch query={query} />
       </div>
@@ -108,10 +108,10 @@ async function DietitianRoom({
         <table className="w-full text-left text-sm">
           <thead className="border-b border-[#eee] bg-[#fcfbf8] text-xs text-[#6d6a62]">
             <tr>
-              <th className="px-5 py-4 font-medium">Danışan</th>
-              <th className="px-5 py-4 font-medium">Sorumlu</th>
-              <th className="px-5 py-4 font-medium">Liste</th>
-              <th className="px-5 py-4 font-medium">Giriş</th>
+              <th className="px-4 py-3 font-medium sm:px-5 sm:py-4">Danışan</th>
+              <th className="hidden px-5 py-4 font-medium sm:table-cell">Sorumlu</th>
+              <th className="px-4 py-3 font-medium sm:px-5 sm:py-4">Liste</th>
+              <th className="hidden px-5 py-4 font-medium sm:table-cell">Giriş</th>
             </tr>
           </thead>
           <tbody>
@@ -124,16 +124,16 @@ async function DietitianRoom({
             ) : null}
             {rows.map((row) => (
               <tr key={row.id} className="border-b border-[#f0f0ec] last:border-0 hover:bg-[#fcfbf8]">
-                <td className="px-5 py-4">
+                <td className="px-4 py-3 sm:px-5 sm:py-4">
                   <Link href={`/dietitian/clients/${row.id}`} className={linkClass}>
                     {fullName(row.name, row.surname)}
                   </Link>
                 </td>
-                <td className="px-5 py-4 text-[#6d6a62]">{row.dietitianName}</td>
-                <td className="px-5 py-4">
+                <td className="hidden px-5 py-4 text-[#6d6a62] sm:table-cell">{row.dietitianName}</td>
+                <td className="px-4 py-3 sm:px-5 sm:py-4">
                   <ListStatus status={row.status} />
                 </td>
-                <td className="px-5 py-4 text-[#6d6a62]">
+                <td className="hidden px-5 py-4 text-[#6d6a62] sm:table-cell">
                   {row.accountId ? "Hesabı var" : "Hesabı yok"}
                 </td>
               </tr>

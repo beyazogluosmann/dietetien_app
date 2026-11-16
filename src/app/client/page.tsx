@@ -116,7 +116,7 @@ async function ClientRoom() {
       {visibleList ? (
         <DietView body={visibleList.body} authorName={visibleList.authorName} notes={notes} editable />
       ) : request?.status === "rejected" ? (
-        <div className={`${cardClass} px-8 py-8`}>
+        <div className={`${cardClass} px-5 py-6 sm:px-8 sm:py-8`}>
           <p className={mutedClass}>
             {chosen?.name ?? "Diyetisyenin"} talebi kabul etmedi. Başka bir diyetisyen seçebilirsin.
           </p>
@@ -144,7 +144,7 @@ async function ClientRoom() {
           </form>
         </div>
       ) : (
-        <p className={`${cardClass} px-8 py-8 ${mutedClass}`}>
+        <p className={`${cardClass} px-5 py-6 sm:px-8 sm:py-8 ${mutedClass}`}>
           {request?.status === "pending"
             ? `${chosen?.name ?? "Diyetisyenin"} talebini aldı. Listeyi yazınca burada görünür.`
             : "Yayınlanmış bir listen yok. Diyetisyenin yayınlayınca burada görünür."}

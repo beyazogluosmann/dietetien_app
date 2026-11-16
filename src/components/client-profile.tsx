@@ -76,14 +76,14 @@ export function ClientProfile({
   const index = history ? bodyMassIndex(history.heightCm, history.weightKg) : null;
 
   return (
-    <section className={`${cardClass} px-6 py-7 sm:px-8`}>
-      <div className="flex items-center gap-4">
-        <span className="grid size-16 shrink-0 place-items-center rounded-full bg-[#1f4d3a] text-lg font-medium text-white">
+    <section className={`${cardClass} px-4 py-6 sm:px-8 sm:py-7`}>
+      <div className="flex items-center gap-3 sm:gap-4">
+        <span className="grid size-12 shrink-0 place-items-center rounded-full bg-[#1f4d3a] text-base font-medium text-white sm:size-16 sm:text-lg">
           {initials(name)}
         </span>
-        <div>
+        <div className="min-w-0">
           <p className="text-xs font-medium tracking-[0.14em] text-[#1f4d3a]">PROFİL</p>
-          <h1 className="mt-1 text-3xl font-semibold tracking-tight">{name}</h1>
+          <h1 className="mt-1 text-2xl font-semibold tracking-tight sm:text-3xl">{name}</h1>
           {history ? (
             <p className={`${mutedClass} mt-1`}>
               {optionLabel(sexOptions, history.sex)} · {optionLabel(goalOptions, history.goal)}

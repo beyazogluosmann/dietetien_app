@@ -28,7 +28,7 @@ export function DietEditor({
   return (
     <div>
       <input type="hidden" name="body" value={JSON.stringify(plan)} />
-      <div className="flex gap-2 overflow-x-auto px-5 pt-5">
+      <div className="flex gap-2 overflow-x-auto px-4 pt-5 sm:px-5">
         {weekDays.map((item) => {
           const selected = item.id === day;
           const filled = dayHasText(plan, item.id);
@@ -53,7 +53,7 @@ export function DietEditor({
           );
         })}
       </div>
-      <div className="px-6 pt-5 pb-6">
+      <div className="px-4 pt-5 pb-6 sm:px-6">
         <p className="text-sm font-medium text-[#1f4d3a]">{current.label}</p>
         <div className="mt-4 grid gap-3">
           {meals.map((meal) => (
