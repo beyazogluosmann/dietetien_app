@@ -4,6 +4,7 @@ import { redirect } from "next/navigation";
 import { eq } from "drizzle-orm";
 import { hashPassword, passwordMatches } from "@/auth/password";
 import { getSession } from "@/auth/session";
+import { withNotice } from "@/notice";
 import { db } from "@/db";
 import { clientAccount, dietitian } from "@/db/schema";
 
@@ -18,24 +19,24 @@ export async function changePassword(formData: FormData) {
   const again = String(formData.get("again") ?? "");
 
   if (!current || !next || !again) {
-    redirect("/account?password=missing");
+    redirect(withNotice("/account", "password-missing"));
   }
 
   if (next !== again) {
-    redirect("/account?password=match");
+    redirect(withNotice("/account", "password-match"));
   }
 
   if (session.role === "dietitian") {
     const [person] = await db.select().from(dietitian).where(eq(dietitian.id, session.id));
     if (!person || !passwordMatches(current, person.passwordHash)) {
-      redirect("/account?password=wrong");
+      redirect(withNotice("/account", "password-wrong"));
     }
 
     await db
       .update(dietitian)
       .set({ passwordHash: hashPassword(next) })
       .where(eq(dietitian.id, session.id));
-    redirect("/account?password=saved");
+    redirect(withNotice("/account", "password-saved"));
   }
 
   const [account] = await db
@@ -44,7 +45,7 @@ export async function changePassword(formData: FormData) {
     .where(eq(clientAccount.clientId, session.id));
 
   if (!account || !passwordMatches(current, account.passwordHash)) {
-    redirect("/account?password=wrong");
+    redirect(withNotice("/account", "password-wrong"));
   }
 
   await db
@@ -52,5 +53,5 @@ export async function changePassword(formData: FormData) {
     .set({ passwordHash: hashPassword(next) })
     .where(eq(clientAccount.clientId, session.id));
 
-  redirect("/account?password=saved");
+  redirect(withNotice("/account", "password-saved"));
 }

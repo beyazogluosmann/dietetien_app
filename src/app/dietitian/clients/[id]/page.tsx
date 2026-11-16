@@ -16,6 +16,7 @@ import { DietEditor } from "@/components/diet-editor";
 import { DietView } from "@/components/diet-view";
 import { anamnesis, client, clientAccount, clientRequest, dietList, dietitian, mealNote } from "@/db/schema";
 import { emptyPlan } from "@/diet-plan";
+import { withNotice } from "@/notice";
 import { fullName } from "@/person";
 
 async function saveList(formData: FormData) {
@@ -53,7 +54,7 @@ async function saveList(formData: FormData) {
       status: "draft",
       updatedAt: new Date(),
     });
-    redirect(`/dietitian/clients/${clientId}`);
+    redirect(withNotice(`/dietitian/clients/${clientId}`, "list-new"));
   }
 
   if (!list) {
@@ -70,7 +71,7 @@ async function saveList(formData: FormData) {
       .where(
         and(eq(clientRequest.clientId, clientId), eq(clientRequest.dietitianId, session.id)),
       );
-    redirect(`/dietitian/clients/${clientId}`);
+    redirect(withNotice(`/dietitian/clients/${clientId}`, intent === "sent" ? "list-sent" : "list-saved"));
   }
 
   if (list.authorId !== session.id) {
@@ -91,7 +92,7 @@ async function saveList(formData: FormData) {
     .set({ status: "accepted" })
     .where(and(eq(clientRequest.clientId, clientId), eq(clientRequest.dietitianId, session.id)));
 
-  redirect(`/dietitian/clients/${clientId}`);
+  redirect(withNotice(`/dietitian/clients/${clientId}`, intent === "sent" ? "list-sent" : "list-saved"));
 }
 
 async function rejectRequest(formData: FormData) {
@@ -114,7 +115,7 @@ async function rejectRequest(formData: FormData) {
       ),
     );
 
-  redirect("/dietitian");
+  redirect(withNotice("/dietitian", "request-rejected"));
 }
 
 async function DietListPage({ params }: { params: Promise<{ id: string }> }) {

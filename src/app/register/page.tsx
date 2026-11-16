@@ -8,6 +8,7 @@ import { RedirectIfSignedIn } from "@/components/redirect-if-signed-in";
 import { cardClass, fieldClass, linkClass, mutedClass, primaryButtonClass, Screen } from "@/components/ui";
 import { db } from "@/db";
 import { client, clientAccount, clientRequest, dietitian } from "@/db/schema";
+import { withNotice } from "@/notice";
 import { parseEmail, parsePersonName } from "@/person";
 
 async function register(formData: FormData) {
@@ -75,7 +76,7 @@ async function register(formData: FormData) {
   });
 
   await setSession({ role: "client", id: card.id });
-  redirect("/anamnesis");
+  redirect(withNotice("/anamnesis", "registered"));
 }
 
 function registerMessage(error: string | undefined) {
