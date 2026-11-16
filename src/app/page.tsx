@@ -63,9 +63,9 @@ export default function Home() {
           </ul>
         </div>
       </aside>
-      <main className="flex items-center justify-center bg-[#f6f1e6] px-6 py-12">
+      <main className="flex items-start justify-center bg-[#f6f1e6] px-4 py-8 sm:items-center sm:px-6 sm:py-12">
         <div className="w-full max-w-md">
-          <div className="mb-8 flex items-center justify-between lg:hidden">
+          <div className="mb-6 flex items-center justify-between lg:hidden">
             <div className="flex items-center gap-2.5">
               <span className="grid size-8 place-items-center rounded-xl bg-[#1f4d3a] text-xs font-medium text-white">
                 K
@@ -78,9 +78,9 @@ export default function Home() {
               <CarrotMark className="size-9" />
             </div>
           </div>
-          <div className={`${cardClass} px-8 py-10`}>
+          <div className={`${cardClass} px-5 py-7 sm:px-8 sm:py-10`}>
             <p className="text-xs font-medium tracking-[0.14em] text-[#1f4d3a]">GİRİŞ</p>
-            <h1 className="mt-3 text-4xl font-semibold tracking-tight">Hoş geldin</h1>
+            <h1 className="mt-3 text-3xl font-semibold tracking-tight sm:text-4xl">Hoş geldin</h1>
             <p className={`${mutedClass} mt-2`}>Diyetisyen veya danışan hesabınla gir.</p>
             <div className="mt-8">
               <SocialSignIn />

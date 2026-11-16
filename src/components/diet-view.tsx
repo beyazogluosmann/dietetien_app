@@ -27,7 +27,7 @@ export function DietView({
       ) : plan ? (
         <p className={`${mutedClass} px-6 py-8`}>Bu hafta için öğün yazılmamış.</p>
       ) : (
-        <p className="whitespace-pre-wrap px-8 py-8 text-[16px] leading-8">{body}</p>
+        <p className="whitespace-pre-wrap px-5 py-6 text-[16px] leading-8 sm:px-8 sm:py-8">{body}</p>
       )}
     </article>
   );

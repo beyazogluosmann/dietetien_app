@@ -23,7 +23,7 @@ export function DietDays({
 
   return (
     <div>
-      <div className="flex gap-2 overflow-x-auto px-5 pt-5">
+      <div className="flex gap-2 overflow-x-auto px-4 pt-5 sm:px-5">
         {weekDays.map((item) => {
           const selected = item.id === day;
           const hasText = dayHasText(plan, item.id);
@@ -48,7 +48,7 @@ export function DietDays({
           );
         })}
       </div>
-      <section className="px-6 pt-5 pb-6">
+      <section className="px-4 pt-5 pb-6 sm:px-6">
         <h3 className="text-sm font-medium text-[#1f4d3a]">{current.label}</h3>
         {filled.length === 0 ? (
           <p className={`${mutedClass} mt-3`}>Bu gün için öğün yazılmamış.</p>
