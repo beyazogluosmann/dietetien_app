@@ -4,6 +4,7 @@ import { redirect } from "next/navigation";
 import { signIn } from "@/auth/sign-in";
 import { setSession } from "@/auth/session";
 import { RedirectIfSignedIn } from "@/components/redirect-if-signed-in";
+import { withNotice } from "@/notice";
 import { cardClass, fieldClass, linkClass, mutedClass, primaryButtonClass, Screen } from "@/components/ui";
 
 async function login(formData: FormData) {
@@ -14,48 +15,23 @@ async function login(formData: FormData) {
   const result = await signIn(email, password);
 
   if (result === "locked") {
-    redirect("/?error=locked");
+    redirect(withNotice("/", "locked"));
   }
 
   if (!result) {
-    redirect("/?error=1");
+    redirect(withNotice("/", "bad-password"));
   }
 
   if (result.role === "dietitian") {
     await setSession({ role: "dietitian", id: result.dietitianId });
-    redirect("/dietitian");
+    redirect(withNotice("/dietitian", "signed-in"));
   }
 
   await setSession({ role: "client", id: result.clientId });
-  redirect("/client");
+  redirect(withNotice("/client", "signed-in"));
 }
 
-async function LoginError({
-  searchParams,
-}: {
-  searchParams: Promise<{ error?: string }>;
-}) {
-  const params = await searchParams;
-  const message =
-    params.error === "locked"
-      ? "Çok fazla hatalı deneme yapıldı. 15 dakika sonra tekrar dene."
-      : params.error === "1"
-        ? "E-posta veya şifre yanlış."
-        : null;
-  if (!message) {
-    return null;
-  }
-
-  return (
-    <p className="rounded-lg bg-[#fde8e4] px-3 py-2 text-sm text-[#8a2e22]">{message}</p>
-  );
-}
-
-export default function Home({
-  searchParams,
-}: {
-  searchParams: Promise<{ error?: string }>;
-}) {
+export default function Home() {
   return (
     <Screen width="max-w-md">
       <Suspense>
@@ -88,11 +64,6 @@ export default function Home({
             Giriş yap
           </button>
         </form>
-        <div className="mt-4">
-          <Suspense>
-            <LoginError searchParams={searchParams} />
-          </Suspense>
-        </div>
         <p className="mt-6 text-sm">
           <Link href="/register" className={linkClass}>
             Kayıt ol

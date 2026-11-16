@@ -8,12 +8,7 @@ import { db } from "@/db";
 import { client, dietitian } from "@/db/schema";
 import { fullName } from "@/person";
 
-async function AccountRoom({
-  searchParams,
-}: {
-  searchParams: Promise<{ password?: string }>;
-}) {
-  const { password } = await searchParams;
+async function AccountRoom() {
   const session = await getSession();
   if (!session) {
     redirect("/");
@@ -43,20 +38,16 @@ async function AccountRoom({
       <div className={`${cardClass} mt-6 px-8 py-10`}>
         <h1 className="text-4xl font-semibold tracking-tight">Şifre</h1>
         <p className={`${mutedClass} mt-2`}>Hesabının şifresini değiştir.</p>
-        <ChangePasswordForm code={password} />
+        <ChangePasswordForm />
       </div>
     </Screen>
   );
 }
 
-export default function AccountPage({
-  searchParams,
-}: {
-  searchParams: Promise<{ password?: string }>;
-}) {
+export default function AccountPage() {
   return (
     <Suspense>
-      <AccountRoom searchParams={searchParams} />
+      <AccountRoom />
     </Suspense>
   );
 }

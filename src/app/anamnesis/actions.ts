@@ -15,6 +15,7 @@ import {
 } from "@/anamnesis";
 import { db } from "@/db";
 import { anamnesis } from "@/db/schema";
+import { withNotice } from "@/notice";
 
 export async function saveAnamnesis(
   _previous: AnamnesisFormState,
@@ -91,5 +92,5 @@ export async function saveAnamnesis(
     notes: values.notes.trim(),
   });
 
-  redirect("/client");
+  redirect(withNotice("/client", "anamnesis-saved"));
 }

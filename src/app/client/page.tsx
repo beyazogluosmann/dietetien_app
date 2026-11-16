@@ -7,6 +7,7 @@ import { DietView } from "@/components/diet-view";
 import { AccountMenu, cardClass, fieldClass, mutedClass, primaryButtonClass, Screen } from "@/components/ui";
 import { db } from "@/db";
 import { anamnesis, client, clientRequest, dietList, dietitian, mealNote } from "@/db/schema";
+import { withNotice } from "@/notice";
 import { fullName } from "@/person";
 
 async function requestAgain(formData: FormData) {
@@ -38,7 +39,7 @@ async function requestAgain(formData: FormData) {
     .set({ dietitianId: chosen.id, message, status: "pending" })
     .where(and(eq(clientRequest.clientId, session.id), eq(clientRequest.status, "rejected")));
 
-  redirect("/client");
+  redirect(withNotice("/client", "request-sent"));
 }
 
 async function ClientRoom() {

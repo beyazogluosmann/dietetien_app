@@ -6,6 +6,7 @@ import { getSession } from "@/auth/session";
 import { db } from "@/db";
 import { dietList, mealNote } from "@/db/schema";
 import { meals, weekDays } from "@/diet-plan";
+import { withNotice } from "@/notice";
 
 const noteLimit = 400;
 
@@ -36,7 +37,7 @@ export async function saveMealNote(formData: FormData) {
   const mine = and(eq(mealNote.listId, list.id), eq(mealNote.day, day), eq(mealNote.meal, meal));
   if (!body) {
     await db.delete(mealNote).where(mine);
-    redirect("/client");
+    redirect(withNotice("/client", "note-removed"));
   }
 
   await db
@@ -54,5 +55,5 @@ export async function saveMealNote(formData: FormData) {
       set: { body, updatedAt: new Date() },
     });
 
-  redirect("/client");
+  redirect(withNotice("/client", "note-saved"));
 }
