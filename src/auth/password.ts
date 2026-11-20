@@ -1,5 +1,11 @@
 import { randomBytes, scryptSync, timingSafeEqual } from "node:crypto";
 
+
+export function passwordLongEnough(password: string) {
+  return password.length >= 8;
+}
+
+
 export function hashPassword(password: string) {
   const salt = randomBytes(16).toString("hex");
   const hash = scryptSync(password, salt, 64).toString("hex");
