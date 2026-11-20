@@ -2,7 +2,7 @@ import { Suspense } from "react";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { asc, eq } from "drizzle-orm";
-import { hashPassword } from "@/auth/password";
+import { hashPassword, passwordLongEnough } from "@/auth/password";
 import { setSession } from "@/auth/session";
 import { RedirectIfSignedIn } from "@/components/redirect-if-signed-in";
 import { cardClass, fieldClass, linkClass, mutedClass, primaryButtonClass, Screen } from "@/components/ui";
@@ -24,6 +24,10 @@ async function register(formData: FormData) {
 
   if (!phone || !password || !dietitianId) {
     redirect("/register?error=missing");
+  }
+
+  if (!passwordLongEnough(password)) {
+    redirect("/register?error=password-short");
   }
 
   if (!name || !surname) {
@@ -94,6 +98,9 @@ function registerMessage(error: string | undefined) {
   }
   if (error === "dietitian") {
     return "Seçilen diyetisyen bulunamadı.";
+  }
+  if (error === "password-short") {
+    return "Şifre en az 8 karakter olmalı.";
   }
   return null;
 }
