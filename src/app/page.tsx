@@ -9,6 +9,31 @@ import { SocialSignIn } from "@/components/social-sign-in";
 import { withNotice } from "@/notice";
 import { cardClass, fieldClass, linkClass, mutedClass, primaryButtonClass } from "@/components/ui";
 
+function loginMessage(notice: string | undefined) {
+  if (notice === "bad-password") {
+    return "E-posta veya şifre yanlış.";
+  }
+  if (notice === "locked") {
+    return "Çok fazla hatalı deneme. 15 dakika sonra tekrar dene.";
+  }
+  return null;
+}
+
+async function LoginNotice({
+  searchParams,
+}: {
+  searchParams: Promise<{ notice?: string }>;
+}) {
+  const { notice } = await searchParams;
+  const message = loginMessage(notice);
+  if (!message) {
+    return null;
+  }
+  return (
+    <p className="mt-4 rounded-lg bg-[#fde8e4] px-3 py-2 text-sm text-[#8a2e22]">{message}</p>
+  );
+}
+
 async function login(formData: FormData) {
   "use server";
 
@@ -33,7 +58,11 @@ async function login(formData: FormData) {
   redirect(withNotice("/client", "signed-in"));
 }
 
-export default function Home() {
+export default function Home({
+  searchParams,
+}: {
+  searchParams: Promise<{ notice?: string }>;
+}) {
   return (
     <div className="grid min-h-dvh bg-[#1f4d3a] lg:grid-cols-[minmax(0,1.05fr)_minmax(0,0.95fr)] lg:bg-[#f6f1e6]">
       <Suspense>
@@ -120,6 +149,9 @@ export default function Home() {
                 Giriş yap
               </button>
             </form>
+            <Suspense>
+              <LoginNotice searchParams={searchParams} />
+            </Suspense>
             <p className="mt-6 text-sm text-[#6d6a62]">
               Hesabın yok mu?{" "}
               <Link href="/register" className={linkClass}>
