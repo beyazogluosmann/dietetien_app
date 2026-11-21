@@ -1,97 +1,110 @@
 "use client";
 
 import { useState } from "react";
-import { dayHasText, meals, weekDays, type DayId, type DietPlan } from "@/diet-plan";
-import { buttonClass, fieldClass, mutedClass } from "@/components/ui";
+import { weekDays, type DayId, type DietPlan, type MealId } from "@/diet-plan";
+import { DietWeek, filledMeals } from "@/components/diet-week";
+import { WaterDay } from "@/components/water-day";
+import { buttonClass, fieldClass } from "@/components/ui";
 
 export function DietDays({
   plan,
   notes,
+  water = {},
   editable,
+  initialDay,
   saveMealNote,
 }: {
   plan: DietPlan;
   notes: Record<string, string>;
+  water?: Record<string, number>;
   editable: boolean;
+  initialDay?: string;
   saveMealNote: (formData: FormData) => void;
 }) {
-  const [day, setDay] = useState<DayId>(
-    () => weekDays.find((item) => dayHasText(plan, item.id))?.id ?? "monday",
-  );
-  const current = weekDays.find((item) => item.id === day) ?? weekDays[0];
-  const filled = meals.filter((meal) => plan.days[day][meal.id].trim());
+  const [day, setDay] = useState<DayId>(() => {
+    if (weekDays.some((item) => item.id === initialDay)) {
+      return initialDay as DayId;
+    }
+    return weekDays.find((item) => filledMeals(plan, item.id).length > 0)?.id ?? "monday";
+  });
+  const filled = filledMeals(plan, day);
 
   return (
-    <div>
-      <div className="flex gap-2 overflow-x-auto px-4 pt-5 sm:px-5">
-        {weekDays.map((item) => {
-          const selected = item.id === day;
-          const hasText = dayHasText(plan, item.id);
-          return (
-            <button
-              key={item.id}
-              type="button"
-              onClick={() => setDay(item.id)}
-              className={`shrink-0 rounded-full px-3.5 py-2 text-sm font-medium transition ${
-                selected
-                  ? "bg-[#1f4d3a] text-white"
-                  : "bg-[#f4efe4] text-[#1c1c1a] hover:bg-[#ebe4d4]"
-              }`}
-            >
-              {item.short}
-              {hasText ? (
-                <span
-                  className={`ml-1.5 inline-block size-1.5 rounded-full align-middle ${selected ? "bg-white/80" : "bg-[#1f4d3a]"}`}
-                />
-              ) : null}
-            </button>
-          );
-        })}
-      </div>
-      <section className="px-4 pt-5 pb-6 sm:px-6">
-        <h3 className="text-sm font-medium text-[#1f4d3a]">{current.label}</h3>
+    <div className="pb-6">
+      <DietWeek day={day} plan={plan} onSelect={setDay} />
+      <div className="mt-5 grid gap-3 px-5 sm:px-7">
+        <WaterDay day={day} glasses={water[day] ?? 0} editable={editable} />
         {filled.length === 0 ? (
-          <p className={`${mutedClass} mt-3`}>Bu gün için öğün yazılmamış.</p>
+          <p className="py-8 text-sm text-[#6d6a62]">Bu gün için öğün yazılmamış.</p>
         ) : (
-          <div className="mt-3 grid gap-3">
-            {filled.map((meal) => {
-              const note = notes[`${day}:${meal.id}`] ?? "";
-              return (
-                <div
-                  key={`${day}:${meal.id}`}
-                  className={`rounded-xl border border-[#e6e1d6] border-l-4 px-4 py-4 ${meal.tint}`}
-                >
-                  <p className={`text-xs font-medium tracking-[0.08em] ${meal.ink}`}>
-                    {meal.label.toLocaleUpperCase("tr")}
-                  </p>
-                  <p className="mt-2 whitespace-pre-wrap text-[15px] leading-7">{plan.days[day][meal.id]}</p>
-                  {editable ? (
-                    <form action={saveMealNote} className="mt-3">
-                      <input type="hidden" name="day" value={day} />
-                      <input type="hidden" name="meal" value={meal.id} />
-                      <textarea
-                        name="note"
-                        rows={2}
-                        defaultValue={note}
-                        placeholder="Farklı yaptıysan yaz"
-                        className={fieldClass}
-                      />
-                      <button type="submit" className={`${buttonClass} mt-2 h-8 px-3`}>
-                        Kaydet
-                      </button>
-                    </form>
-                  ) : note ? (
-                    <p className="mt-3 text-sm leading-6">
-                      <span className={`font-medium ${meal.ink}`}>Bunu yaptım. </span>
-                      {note}
-                    </p>
-                  ) : null}
-                </div>
-              );
-            })}
-          </div>
+          filled.map((meal) => {
+            const note = notes[`${day}:${meal.id}`] ?? "";
+            return (
+              <article key={`${day}:${meal.id}`} className={`rounded-2xl px-5 py-5 ${meal.wash}`}>
+                <p className={`flex items-center gap-2 text-xs font-medium tracking-[0.14em] ${meal.ink}`}>
+                  <span className={`size-2 rounded-full ${meal.mark}`} />
+                  {meal.label.toLocaleUpperCase("tr")}
+                </p>
+                <p className="mt-3 text-[17px] leading-8 whitespace-pre-wrap">{plan.days[day][meal.id]}</p>
+                {editable ? (
+                  <MealNote day={day} meal={meal.id} note={note} ink={meal.ink} saveMealNote={saveMealNote} />
+                ) : note ? (
+                  <p className="mt-4 text-sm leading-6 text-[#5c5850]">{note}</p>
+                ) : null}
+              </article>
+            );
+          })
         )}
-      </section>
+      </div>
     </div>
+  );
+}
+
+function MealNote({
+  day,
+  meal,
+  note,
+  ink,
+  saveMealNote,
+}: {
+  day: DayId;
+  meal: MealId;
+  note: string;
+  ink: string;
+  saveMealNote: (formData: FormData) => void;
+}) {
+  const [editing, setEditing] = useState(false);
+
+  if (!editing) {
+    return (
+      <div className="mt-4 flex items-start justify-between gap-4">
+        {note ? <p className="text-sm leading-6 text-[#5c5850]">{note}</p> : <span />}
+        <button type="button" onClick={() => setEditing(true)} className={`shrink-0 text-sm font-medium ${ink}`}>
+          {note ? "Değiştir" : "Not ekle"}
+        </button>
+      </div>
+    );
+  }
+
+  return (
+    <form action={saveMealNote} className="mt-4">
+      <input type="hidden" name="day" value={day} />
+      <input type="hidden" name="meal" value={meal} />
+      <textarea
+        name="note"
+        rows={2}
+        defaultValue={note}
+        placeholder="Farklı yaptıysan yaz"
+        className={fieldClass}
+      />
+      <div className="mt-2 flex gap-2">
+        <button type="submit" className={`${buttonClass} h-8 px-3`}>
+          Kaydet
+        </button>
+        <button type="button" onClick={() => setEditing(false)} className="h-8 px-3 text-sm text-[#6d6a62]">
+          Vazgeç
+        </button>
+      </div>
+    </form>
   );
 }

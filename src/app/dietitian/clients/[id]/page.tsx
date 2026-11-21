@@ -14,7 +14,7 @@ import { db } from "@/db";
 import { ClientProfile } from "@/components/client-profile";
 import { DietEditor } from "@/components/diet-editor";
 import { DietView } from "@/components/diet-view";
-import { anamnesis, client, clientAccount, clientRequest, dietList, dietitian, mealNote } from "@/db/schema";
+import { anamnesis, client, clientAccount, clientRequest, dietList, dietitian, mealNote, waterLog } from "@/db/schema";
 import { emptyPlan } from "@/diet-plan";
 import { withNotice } from "@/notice";
 import { fullName } from "@/person";
@@ -156,6 +156,14 @@ async function DietListPage({ params }: { params: Promise<{ id: string }> }) {
         ]),
       )
     : {};
+  const water = list
+    ? Object.fromEntries(
+        (await db.select().from(waterLog).where(eq(waterLog.listId, list.id))).map((row) => [
+          row.day,
+          row.glasses,
+        ]),
+      )
+    : {};
 
   return (
     <Screen
@@ -200,7 +208,7 @@ async function DietListPage({ params }: { params: Promise<{ id: string }> }) {
           className="overflow-hidden rounded-2xl border border-[#e6e1d6] bg-white shadow-[0_16px_40px_rgba(31,77,58,0.06)]"
         >
           <input type="hidden" name="clientId" value={card.id} />
-          <DietEditor initialBody={list?.body ?? ""} notes={notes} />
+          <DietEditor initialBody={list?.body ?? ""} notes={notes} water={water} />
           <div className="flex flex-wrap justify-end gap-2 border-t border-[#eee] bg-[#fafaf8] px-4 py-3">
             <button type="submit" name="intent" value="new" className={buttonClass}>
               Yeni hafta
@@ -214,7 +222,7 @@ async function DietListPage({ params }: { params: Promise<{ id: string }> }) {
           </div>
         </form>
       ) : (
-        <DietView body={list?.body ?? ""} notes={notes} />
+        <DietView body={list?.body ?? ""} notes={notes} water={water} />
       )}
     </Screen>
   );

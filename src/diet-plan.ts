@@ -9,11 +9,13 @@ export const weekDays = [
 ] as const;
 
 export const meals = [
-  { id: "morning", label: "Sabah", tint: "border-l-[#c4a15a] bg-[#fbf6ea]", ink: "text-[#7a5b24]" },
-  { id: "noon", label: "Öğle", tint: "border-l-[#2f6b4f] bg-[#f3f7f4]", ink: "text-[#1f4d3a]" },
-  { id: "evening", label: "Akşam", tint: "border-l-[#a86b52] bg-[#faf3ef]", ink: "text-[#7a4636]" },
-  { id: "snack", label: "Ara öğün", tint: "border-l-[#8a8478] bg-[#f7f5f1]", ink: "text-[#5c574e]" },
+  { id: "morning", label: "Sabah", wash: "bg-[#fff1d4]", mark: "bg-[#e39b12]", ink: "text-[#9a6410]" },
+  { id: "noon", label: "Öğle", wash: "bg-[#e5f6e8]", mark: "bg-[#2f9d57]", ink: "text-[#1d6b3a]" },
+  { id: "evening", label: "Akşam", wash: "bg-[#fde4e8]", mark: "bg-[#d4536c]", ink: "text-[#a33d52]" },
+  { id: "snack", label: "Ara öğün", wash: "bg-[#efe7fb]", mark: "bg-[#7b62c4]", ink: "text-[#53409a]" },
 ] as const;
+
+export const waterGoal = 8;
 
 export type DayId = (typeof weekDays)[number]["id"];
 export type MealId = (typeof meals)[number]["id"];
