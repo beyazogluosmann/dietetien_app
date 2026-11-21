@@ -45,7 +45,7 @@ function Stat({
   ink: string;
 }) {
   return (
-    <div className={`rounded-xl border border-[#e6e1d6] border-l-4 px-4 py-4 ${tint}`}>
+    <div className={`rounded-2xl px-4 py-4 ${tint}`}>
       <dt className={`text-xs font-medium ${ink}`}>{label}</dt>
       <dd className="mt-2 text-2xl font-semibold tracking-tight">{value}</dd>
       {hint ? <p className={`mt-1 text-xs ${ink}`}>{hint}</p> : null}
@@ -99,14 +99,14 @@ export function ClientProfile({
       {history ? (
         <>
           <dl className="mt-6 grid grid-cols-2 gap-3 sm:grid-cols-4">
-            <Stat label="Yaş" value={history.age} tint={meals[0].tint} ink={meals[0].ink} />
-            <Stat label="Boy" value={`${history.heightCm} cm`} tint={meals[1].tint} ink={meals[1].ink} />
-            <Stat label="Kilo" value={`${history.weightKg} kg`} tint={meals[2].tint} ink={meals[2].ink} />
+            <Stat label="Yaş" value={history.age} tint={meals[0].wash} ink={meals[0].ink} />
+            <Stat label="Boy" value={`${history.heightCm} cm`} tint={meals[1].wash} ink={meals[1].ink} />
+            <Stat label="Kilo" value={`${history.weightKg} kg`} tint={meals[2].wash} ink={meals[2].ink} />
             <Stat
               label="İndeks"
               value={index !== null ? String(index) : "—"}
               hint={index !== null ? bodyMassLabel(index) : undefined}
-              tint={meals[3].tint}
+              tint={meals[3].wash}
               ink={meals[3].ink}
             />
           </dl>

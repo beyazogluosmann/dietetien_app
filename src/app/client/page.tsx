@@ -6,7 +6,7 @@ import { ClientProfile } from "@/components/client-profile";
 import { DietView } from "@/components/diet-view";
 import { AccountMenu, cardClass, fieldClass, mutedClass, primaryButtonClass, Screen } from "@/components/ui";
 import { db } from "@/db";
-import { anamnesis, client, clientRequest, dietList, dietitian, mealNote } from "@/db/schema";
+import { anamnesis, client, clientRequest, dietList, dietitian, mealNote, waterLog } from "@/db/schema";
 import { withNotice } from "@/notice";
 import { fullName } from "@/person";
 
@@ -42,7 +42,8 @@ async function requestAgain(formData: FormData) {
   redirect(withNotice("/client", "request-sent"));
 }
 
-async function ClientRoom() {
+async function ClientRoom({ searchParams }: { searchParams: Promise<{ day?: string }> }) {
+  const { day } = await searchParams;
   const session = await getSession();
   if (!session || session.role !== "client") {
     redirect("/");
@@ -101,6 +102,14 @@ async function ClientRoom() {
         ]),
       )
     : {};
+  const water = visibleList
+    ? Object.fromEntries(
+        (await db.select().from(waterLog).where(eq(waterLog.listId, visibleList.id))).map((row) => [
+          row.day,
+          row.glasses,
+        ]),
+      )
+    : {};
 
   return (
     <Screen
@@ -114,7 +123,14 @@ async function ClientRoom() {
         DİYET LİSTESİ
       </h2>
       {visibleList ? (
-        <DietView body={visibleList.body} authorName={visibleList.authorName} notes={notes} editable />
+        <DietView
+          body={visibleList.body}
+          authorName={visibleList.authorName}
+          notes={notes}
+          water={water}
+          editable
+          initialDay={day}
+        />
       ) : request?.status === "rejected" ? (
         <div className={`${cardClass} px-5 py-6 sm:px-8 sm:py-8`}>
           <p className={mutedClass}>
@@ -154,10 +170,14 @@ async function ClientRoom() {
   );
 }
 
-export default function ClientPage() {
+export default function ClientPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ day?: string }>;
+}) {
   return (
     <Suspense>
-      <ClientRoom />
+      <ClientRoom searchParams={searchParams} />
     </Suspense>
   );
 }

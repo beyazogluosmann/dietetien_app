@@ -94,6 +94,23 @@ export const mealNote = pgTable(
   (table) => [unique().on(table.listId, table.day, table.meal)],
 );
 
+export const waterLog = pgTable(
+  "water_log",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    clientId: uuid("client_id")
+      .notNull()
+      .references(() => client.id),
+    listId: uuid("list_id")
+      .notNull()
+      .references(() => dietList.id),
+    day: text("day").notNull(),
+    glasses: integer("glasses").notNull().default(0),
+    updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
+  },
+  (table) => [unique().on(table.listId, table.day)],
+);
+
 export const loginAttempt = pgTable("login_attempt", {
   email: text("email").primaryKey(),
   failures: integer("failures").notNull().default(0),
