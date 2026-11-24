@@ -30,7 +30,7 @@ async function DietitianRoom({
     redirect("/");
   }
 
-  const requests = await db
+  const requestsQuery = db
     .select({
       id: clientRequest.id,
       clientId: client.id,
@@ -68,12 +68,13 @@ async function DietitianRoom({
   const visible = or(isNull(clientRequest.id), ne(clientRequest.status, "rejected"));
   const mine = and(eq(client.dietitianId, person.id), visible);
   const named = sql`${client.name} || ' ' || ${client.surname}`;
-  const rows = await (query
+  const rowsQuery = (query
     ? clients.where(
         and(mine, or(ilike(client.name, pattern), ilike(client.surname, pattern), ilike(named, pattern))),
       )
     : clients.where(mine)
   ).orderBy(client.name, client.surname);
+  const [requests, rows] = await Promise.all([requestsQuery, rowsQuery]);
 
   return (
     <Screen

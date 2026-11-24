@@ -58,15 +58,8 @@ async function ClientRoom({ searchParams }: { searchParams: Promise<{ day?: stri
     redirect("/");
   }
 
-  const [history] = await db
-    .select()
-    .from(anamnesis)
-    .where(eq(anamnesis.clientId, person.id));
-  if (!history) {
-    redirect("/anamnesis");
-  }
-
-  const [list] = await db
+  const historyQuery = db.select().from(anamnesis).where(eq(anamnesis.clientId, person.id));
+  const listQuery = db
     .select({
       id: dietList.id,
       body: dietList.body,
@@ -77,39 +70,32 @@ async function ClientRoom({ searchParams }: { searchParams: Promise<{ day?: stri
     .leftJoin(dietitian, eq(dietList.authorId, dietitian.id))
     .where(and(eq(dietList.clientId, person.id), eq(dietList.status, "sent")))
     .orderBy(desc(dietList.updatedAt));
-
-  const [chosen] = await db
-    .select()
-    .from(dietitian)
-    .where(eq(dietitian.id, person.dietitianId));
-
-  const [request] = await db
-    .select()
-    .from(clientRequest)
-    .where(eq(clientRequest.clientId, person.id));
-
-  const dietitians =
-    request?.status === "rejected"
-      ? await db.select().from(dietitian).orderBy(asc(dietitian.name))
-      : [];
+  const dietitianQuery = db.select().from(dietitian).where(eq(dietitian.id, person.dietitianId));
+  const requestQuery = db.select().from(clientRequest).where(eq(clientRequest.clientId, person.id));
+  const [[history], [list], [chosen], [request]] = await Promise.all([
+    historyQuery,
+    listQuery,
+    dietitianQuery,
+    requestQuery,
+  ]);
+  if (!history) {
+    redirect("/anamnesis");
+  }
 
   const visibleList = list?.status === "sent" ? list : null;
-  const notes = visibleList
-    ? Object.fromEntries(
-        (await db.select().from(mealNote).where(eq(mealNote.listId, visibleList.id))).map((note) => [
-          `${note.day}:${note.meal}`,
-          note.body,
-        ]),
-      )
-    : {};
-  const water = visibleList
-    ? Object.fromEntries(
-        (await db.select().from(waterLog).where(eq(waterLog.listId, visibleList.id))).map((row) => [
-          row.day,
-          row.glasses,
-        ]),
-      )
-    : {};
+  const notesQuery = visibleList
+    ? db.select().from(mealNote).where(eq(mealNote.listId, visibleList.id))
+    : Promise.resolve([]);
+  const waterQuery = visibleList
+    ? db.select().from(waterLog).where(eq(waterLog.listId, visibleList.id))
+    : Promise.resolve([]);
+  const dietitiansQuery =
+    request?.status === "rejected"
+      ? db.select().from(dietitian).orderBy(asc(dietitian.name))
+      : Promise.resolve([]);
+  const [noteRows, waterRows, dietitians] = await Promise.all([notesQuery, waterQuery, dietitiansQuery]);
+  const notes = Object.fromEntries(noteRows.map((note) => [`${note.day}:${note.meal}`, note.body]));
+  const water = Object.fromEntries(waterRows.map((row) => [row.day, row.glasses]));
 
   return (
     <Screen

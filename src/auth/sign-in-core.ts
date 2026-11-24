@@ -28,12 +28,15 @@ export async function signInAgainst(
   }
 
   const key = cleanedEmail.toLowerCase();
-  const attempt = await store.getAttempt(key);
+  const [attempt, foundDietitian, foundClient] = await Promise.all([
+    store.getAttempt(key),
+    store.findDietitian(cleanedEmail),
+    store.findClient(cleanedEmail),
+  ]);
   if (attempt?.lockedUntil && attempt.lockedUntil > now) {
     return "locked";
   }
 
-  const foundDietitian = await store.findDietitian(cleanedEmail);
   if (foundDietitian) {
     if (!passwordMatches(password, foundDietitian.passwordHash)) {
       await recordFailure(store, key, now);
@@ -43,7 +46,6 @@ export async function signInAgainst(
     return { role: "dietitian", dietitianId: foundDietitian.id };
   }
 
-  const foundClient = await store.findClient(cleanedEmail);
   if (!foundClient || !passwordMatches(password, foundClient.passwordHash)) {
     await recordFailure(store, key, now);
     return null;
