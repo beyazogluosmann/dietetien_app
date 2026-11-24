@@ -5,19 +5,17 @@ import { redirect } from "next/navigation";
 import { getSession } from "@/auth/session";
 import { db } from "@/db";
 import { dietList, waterLog } from "@/db/schema";
-import { waterGoal, weekDays, type DayId } from "@/diet-plan";
+import { waterGoal, weekDays } from "@/diet-plan";
 
-export async function saveWater(formData: FormData) {
+export async function saveWater(day: string, glasses: number) {
   const session = await getSession();
   if (!session || session.role !== "client") {
     redirect("/");
   }
 
-  const day = String(formData.get("day") ?? "");
-  const glasses = Number(formData.get("glasses"));
   const knownDay = weekDays.some((item) => item.id === day);
   if (!knownDay || !Number.isInteger(glasses) || glasses < 0 || glasses > waterGoal) {
-    redirect("/client");
+    return false;
   }
 
   const [list] = await db
@@ -26,7 +24,7 @@ export async function saveWater(formData: FormData) {
     .where(and(eq(dietList.clientId, session.id), eq(dietList.status, "sent")))
     .orderBy(desc(dietList.updatedAt));
   if (!list) {
-    redirect("/client");
+    return false;
   }
 
   const mine = and(eq(waterLog.listId, list.id), eq(waterLog.day, day));
@@ -48,5 +46,5 @@ export async function saveWater(formData: FormData) {
       });
   }
 
-  redirect(`/client?day=${day as DayId}`);
+  return true;
 }
