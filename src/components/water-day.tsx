@@ -11,8 +11,8 @@ export function WaterDay({
   editable: boolean;
 }) {
   return (
-    <div className="rounded-2xl bg-[#d7f2fb] px-5 py-6">
-      <div className="relative mx-auto size-64">
+    <div className="flex items-center justify-center gap-4 rounded-2xl bg-[#d7f2fb] px-5 py-6">
+      <div className="relative size-64 shrink-0">
         <div className="pointer-events-none absolute top-[14%] left-[14%] size-[72%] rounded-full border border-dashed border-[#4eb6de]" />
         <div className="absolute inset-0 grid place-items-center text-center">
           <div>
@@ -33,7 +33,8 @@ export function WaterDay({
               : "border-[#7ecae8] bg-white shadow-[0_6px_14px_rgba(14,140,190,0.12)]"
           }`;
           const place = { left: `${left}%`, top: `${top}%` };
-          if (!editable) {
+          const clearsTheDay = filled && glasses === 1;
+          if (!editable || clearsTheDay) {
             return <span key={count} aria-hidden="true" className={face} style={place} />;
           }
           const next = count === glasses ? count - 1 : count;
@@ -51,6 +52,18 @@ export function WaterDay({
           );
         })}
       </div>
+      {editable && glasses > 0 ? (
+        <form action={saveWater}>
+          <input type="hidden" name="day" value={day} />
+          <input type="hidden" name="glasses" value="0" />
+          <button
+            type="submit"
+            className="rounded-full border border-[#7ecae8] bg-white px-3 py-2 text-sm font-medium text-[#08688f]"
+          >
+            Sıfırla
+          </button>
+        </form>
+      ) : null}
     </div>
   );
 }
